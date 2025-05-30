@@ -1,7 +1,18 @@
+
 import type { SVGProps } from 'react';
 
 const Logo = (props: SVGProps<SVGSVGElement>) => (
-  <svg width="170" height="40" viewBox="0 0 170 40" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+  <svg 
+    width="200" 
+    height="40" 
+    viewBox="0 0 200 40" 
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg" 
+    aria-labelledby="trackerlyLogoTitle"
+    role="img"
+    {...props}
+  >
+    <title id="trackerlyLogoTitle">TRACKERLY Logo</title>
     <defs>
       <filter id="logo-glow" x="-50%" y="-50%" width="200%" height="200%">
         <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="blur" />
@@ -12,14 +23,11 @@ const Logo = (props: SVGProps<SVGSVGElement>) => (
           <feMergeNode in="SourceGraphic"/>
         </feMerge>
       </filter>
-      <mask id="r-bite-mask">
-        <rect width="100%" height="100%" fill="white"/>
-        <circle cx="76" cy="15" r="3.5" fill="black" />
-      </mask>
     </defs>
     <g filter="url(#logo-glow)">
+      {/* T */}
       <text
-        x="0"
+        x="10"
         y="29"
         fontFamily="Inter, sans-serif"
         fontSize="28"
@@ -29,8 +37,10 @@ const Logo = (props: SVGProps<SVGSVGElement>) => (
       >
         T
       </text>
+      
+      {/* R with bite - text part */}
       <text
-        x="20"
+        x="32"
         y="29"
         fontFamily="Inter, sans-serif"
         fontSize="28"
@@ -40,31 +50,36 @@ const Logo = (props: SVGProps<SVGSVGElement>) => (
       >
         R
       </text>
-       {/* "Bite" effect on R - conceptual, applied via mask in a more complex setup or direct path modification. Here, a simplified visual representation */}
-      <circle cx="75.5" cy="14.5" r="1.5" fill="hsl(var(--background))" stroke="hsl(var(--primary))" strokeWidth="0.5"/>
-      <line x1="75.5" y1="14.5" x2="77.5" y2="12.5" stroke="hsl(var(--primary))" strokeWidth="1"/>
-      <line x1="75.5" y1="14.5" x2="77.5" y2="16.5" stroke="hsl(var(--primary))" strokeWidth="1"/>
-      <text
-        x="40"
-        y="29"
-        fontFamily="Inter, sans-serif"
-        fontSize="28"
-        fontWeight="bold"
-        fill="hsl(var(--foreground))"
-        letterSpacing="0.5"
-        mask="url(#r-bite-mask-conceptual)" 
-      >
-        ACKE
-      </text>
-       {/* Actual R with a conceptual bite using path, simplified here */}
-      <path d="M68 8 H 72 V 12 C 70 12 69 11 69 10 V 8 Z M68 13 V 28 H 72 V 18 L 77 28 H 81 L 75 17 L 81 8 H 77 L 72 16 V 8 H 68 Z"
-            fill="hsl(var(--foreground))"
-            fontFamily="Inter, sans-serif"
-            fontSize="28"
-            fontWeight="bold" />
+      {/* Bite effect on the R */}
+      {/* The "R" character's top bowl is approximately from y=9 to y=19, centered around x=32 + half_width_of_R_bowl.
+          Assuming R is ~20 units wide, its text anchor x=32. Its bowl extends to the right.
+          A good position for the bite on R would be around x=46, y=14 for a font size of 28.
+      */}
+      <circle 
+        cx="46" 
+        cy="14.5" 
+        r="4.5" 
+        fill="hsl(var(--background))" 
+      />
+      {/* Clock hands inside the bite */}
+      <line 
+        x1="46" y1="14.5" 
+        x2="46" y2="11.5" 
+        stroke="hsl(var(--accent))" 
+        strokeWidth="1" 
+        strokeLinecap="round"
+      /> 
+      <line 
+        x1="46" y1="14.5" 
+        x2="49" y2="14.5" 
+        stroke="hsl(var(--accent))" 
+        strokeWidth="1" 
+        strokeLinecap="round"
+      />
 
+      {/* ACKERLY */}
       <text
-        x="82"
+        x="55"
         y="29"
         fontFamily="Inter, sans-serif"
         fontSize="28"
@@ -72,7 +87,7 @@ const Logo = (props: SVGProps<SVGSVGElement>) => (
         fill="hsl(var(--foreground))"
         letterSpacing="0.5"
       >
-        LY
+        ACKERLY
       </text>
     </g>
   </svg>
