@@ -25,7 +25,7 @@ const testimonialsData: Testimonial[] = [
     title: 'Founder & CEO',
     company: 'Innovatech Solutions',
     quote: "TrackerlyY has revolutionized how we manage our remote team. The smart verifications are genius and activity insights are invaluable!",
-    avatar: 'https://placehold.co/100x100/E0E7FF/4F46E5?text=SC',
+    avatar: 'https://placehold.co/100x100/4e7dd9/FFFFFF?text=SC', // Primary color
     stars: 5,
     aiHint: 'woman portrait professional',
   },
@@ -35,7 +35,7 @@ const testimonialsData: Testimonial[] = [
     title: 'CTO',
     company: 'NextGen Startups',
     quote: "The ease of use and the fun gamified elements make TrackerlyY a hit with our developers. Productivity is up!",
-    avatar: 'https://placehold.co/100x100/B19CD9/FFFFFF?text=DM',
+    avatar: 'https://placehold.co/100x100/a174f8/FFFFFF?text=DM', // Accent color
     stars: 5,
     aiHint: 'man portrait tech',
   },
@@ -45,7 +45,7 @@ const testimonialsData: Testimonial[] = [
     title: 'Operations Manager',
     company: 'Creative Minds Inc.',
     quote: "We've tried other trackers, but TrackerlyY's balance of monitoring and trust is perfect for our creative team.",
-    avatar: 'https://placehold.co/100x100/94B3FD/FFFFFF?text=JL',
+    avatar: 'https://placehold.co/100x100/66c2ff/000000?text=JL', // Light blue
     stars: 4,
     aiHint: 'woman smiling office',
   },
@@ -66,7 +66,7 @@ export default function TestimonialsSection() {
   useEffect(() => {
     const timer = setTimeout(() => {
       nextTestimonial();
-    }, 5000); // Change testimonial every 5 seconds
+    }, 5000); 
     return () => clearTimeout(timer);
   }, [currentIndex]);
 
@@ -80,7 +80,7 @@ export default function TestimonialsSection() {
     >
       <div className="container mx-auto max-w-screen-lg px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16">
-          <h2 className="font-headline text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+          <h2 className="font-headline text-3xl sm:text-4xl font-bold tracking-tight mb-4 text-foreground">
             Loved by Startup <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Founders</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -89,7 +89,7 @@ export default function TestimonialsSection() {
         </div>
 
         <div className="relative">
-          <Card className="max-w-2xl mx-auto bg-card shadow-lg p-6 md:p-8 overflow-hidden">
+          <Card className="max-w-2xl mx-auto bg-card shadow-lg p-6 md:p-8 overflow-hidden border-border/50">
             <CardContent className="text-center">
               <Image
                 src={current.avatar}
@@ -101,10 +101,10 @@ export default function TestimonialsSection() {
               />
               <div className="flex justify-center mb-2">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className={`h-5 w-5 ${i < current.stars ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
+                  <Star key={i} className={`h-5 w-5 ${i < current.stars ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground/30'}`} />
                 ))}
               </div>
-              <blockquote className="text-lg italic text-foreground mb-4">
+              <blockquote className="text-lg italic text-card-foreground mb-4">
                 "{current.quote}"
               </blockquote>
               <p className="font-semibold text-primary">{current.name}</p>
@@ -115,7 +115,7 @@ export default function TestimonialsSection() {
           <Button
             variant="outline"
             size="icon"
-            className="absolute left-0 top-1/2 -translate-y-1/2 transform -translate-x-1/2 md:-translate-x-full rounded-full h-10 w-10 bg-background hover:bg-secondary"
+            className="absolute left-0 top-1/2 -translate-y-1/2 transform -translate-x-1/2 md:-translate-x-full rounded-full h-10 w-10 bg-card hover:bg-secondary text-foreground"
             onClick={prevTestimonial}
             aria-label="Previous testimonial"
           >
@@ -124,7 +124,7 @@ export default function TestimonialsSection() {
           <Button
             variant="outline"
             size="icon"
-            className="absolute right-0 top-1/2 -translate-y-1/2 transform translate-x-1/2 md:translate-x-full rounded-full h-10 w-10 bg-background hover:bg-secondary"
+            className="absolute right-0 top-1/2 -translate-y-1/2 transform translate-x-1/2 md:translate-x-full rounded-full h-10 w-10 bg-card hover:bg-secondary text-foreground"
             onClick={nextTestimonial}
             aria-label="Next testimonial"
           >

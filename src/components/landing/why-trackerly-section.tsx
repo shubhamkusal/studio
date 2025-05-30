@@ -37,11 +37,11 @@ export default function WhyTrackerlySection() {
     <section 
       ref={sectionRef as React.RefObject<HTMLElement>} 
       id="solutions" 
-      className="fade-in-section py-16 md:py-24 bg-secondary/30"
+      className="fade-in-section py-16 md:py-24 bg-background/70" // Adjusted background
     >
       <div className="container mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16">
-          <h2 className="font-headline text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+          <h2 className="font-headline text-3xl sm:text-4xl font-bold tracking-tight mb-4 text-foreground">
             Why <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">TrackerlyY</span>?
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -51,12 +51,12 @@ export default function WhyTrackerlySection() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {features.map((feature, index) => (
-            <Card key={index} className="text-center bg-card hover:shadow-xl transition-shadow duration-300">
+            <Card key={index} className="text-center bg-card hover:shadow-xl transition-shadow duration-300 border-border/50">
               <CardHeader className="items-center">
-                <div className="p-3 rounded-full bg-primary/10 mb-4 inline-block">
+                <div className="p-3 rounded-full bg-primary/20 mb-4 inline-block"> {/* Adjusted icon bg */}
                   <feature.icon className="h-10 w-10 text-primary" />
                 </div>
-                <CardTitle className="font-headline text-xl">{feature.title}</CardTitle>
+                <CardTitle className="font-headline text-xl text-card-foreground">{feature.title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground text-sm">{feature.description}</p>

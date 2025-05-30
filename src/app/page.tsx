@@ -9,7 +9,7 @@ import AnomalyDetectionCard from '@/components/landing/anomaly-detection-card';
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-discord-gradient"> {/* Applied gradient background */}
       <Navbar />
       <main className="flex-grow">
         <HeroSection />
@@ -18,16 +18,15 @@ export default function HomePage() {
         <HowItWorksSection />
         <AnomalyDetectionCard />
         <TestimonialsSection />
-        {/* Placeholder for Pricing and Company sections if needed */}
         <section id="pricing" className="py-16 md:py-24 text-center">
           <div className="container mx-auto">
-            <h2 className="font-headline text-3xl sm:text-4xl font-bold">Pricing</h2>
+            <h2 className="font-headline text-3xl sm:text-4xl font-bold text-foreground">Pricing</h2>
             <p className="text-muted-foreground mt-4">Coming Soon! Flexible plans for teams of all sizes.</p>
           </div>
         </section>
-        <section id="company" className="py-16 md:py-24 bg-secondary/30 text-center">
+        <section id="company" className="py-16 md:py-24 bg-background/50 text-center">
           <div className="container mx-auto">
-            <h2 className="font-headline text-3xl sm:text-4xl font-bold">Our Company</h2>
+            <h2 className="font-headline text-3xl sm:text-4xl font-bold text-foreground">Our Company</h2>
             <p className="text-muted-foreground mt-4">Learn more about the team behind TrackerlyY.</p>
             <p className="text-muted-foreground mt-2">We are passionate about building tools that empower remote teams.</p>
           </div>

@@ -31,7 +31,7 @@ const legalLinks = [
 
 export default function Footer() {
   return (
-    <footer className="bg-secondary/50 text-secondary-foreground py-12 md:py-16">
+    <footer className="bg-background/80 text-secondary-foreground py-12 md:py-16 border-t border-border/50">
       <div className="container mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           <div>
@@ -89,7 +89,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-border pt-8 text-center text-sm text-muted-foreground">
+        <div className="border-t border-border/50 pt-8 text-center text-sm text-muted-foreground">
           &copy; {new Date().getFullYear()} TrackerlyY. All rights reserved.
         </div>
       </div>
