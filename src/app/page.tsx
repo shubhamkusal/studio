@@ -2,6 +2,7 @@ import Navbar from '@/components/layout/navbar';
 import Footer from '@/components/layout/footer';
 import HeroSection from '@/components/landing/hero-section';
 import WhyTrackerlySection from '@/components/landing/why-trackerly-section';
+import CoreFeaturesSection from '@/components/landing/core-features-section'; // New Import
 import InteractiveDashboardSection from '@/components/landing/interactive-dashboard-section';
 import HowItWorksSection from '@/components/landing/how-it-works-section';
 import TestimonialsSection from '@/components/landing/testimonials-section';
@@ -15,14 +16,14 @@ const pricingPlans = [
     name: 'Starter',
     price: 'Coming Soon',
     description: 'For individuals and small teams getting started.',
-    features: ['Up to 5 Users', 'Core Time Tracking', 'Basic Reporting'],
+    features: ['Up to 5 Users', 'Core Time Tracking', 'Basic Reporting', 'Personal Productivity Mode'],
     cta: 'Notify Me',
   },
   {
     name: 'Pro',
     price: 'Coming Soon',
     description: 'For growing teams needing more features and support.',
-    features: ['Up to 20 Users', 'Advanced Time Tracking', 'Smart Verifications', 'AI Anomaly Alerts', 'Priority Support'],
+    features: ['Up to 20 Users', 'Advanced Time Tracking', 'Smart Verifications', 'AI Anomaly Alerts', 'Basic Document Management', 'Priority Support'],
     badge: 'Most Popular',
     cta: 'Notify Me',
   },
@@ -30,7 +31,7 @@ const pricingPlans = [
     name: 'Enterprise',
     price: 'Coming Soon',
     description: 'For large organizations with custom needs.',
-    features: ['Unlimited Users', 'Custom Integrations', 'Dedicated Account Manager', 'SLA & Advanced Security'],
+    features: ['Unlimited Users', 'All Pro Features', 'Role & Shift Config', 'HRMS AI Operations', 'Voice Communication', 'Deep Analytics', 'Advanced Security & SLA'],
     cta: 'Contact Us',
   },
 ];
@@ -42,6 +43,7 @@ export default function HomePage() {
       <main className="flex-grow">
         <HeroSection />
         <WhyTrackerlySection />
+        <CoreFeaturesSection /> {/* Added new section */}
         <InteractiveDashboardSection />
         <HowItWorksSection />
         <AnomalyDetectionCard />

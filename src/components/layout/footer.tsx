@@ -1,20 +1,23 @@
 // src/components/layout/footer.tsx
 import Link from 'next/link';
 import Logo from '@/components/icons/logo';
-import { Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
+import { Facebook, Twitter, Linkedin, Instagram, Github } from 'lucide-react'; // Added Github
 
 const socialLinks = [
   { name: 'Facebook', icon: Facebook, href: '#' },
   { name: 'Twitter', icon: Twitter, href: '#' },
   { name: 'LinkedIn', icon: Linkedin, href: '#' },
   { name: 'Instagram', icon: Instagram, href: '#' },
+  { name: 'GitHub', icon: Github, href: '#' }, // Added GitHub
 ];
 
 const productLinks = [
-  { name: 'Time Tracking', href: '#solutions' },
-  { name: 'Productivity Monitoring', href: '#solutions' },
-  { name: 'Smart Verifications', href: '#solutions' },
-  { name: 'Integrations', href: '#' },
+  { name: 'Smart Clock-In', href: '#core-features' },
+  { name: 'Time Tracking', href: '#core-features' },
+  { name: 'AI Operations', href: '#core-features' },
+  { name: 'Voice Channels', href: '#core-features' },
+  { name: 'Analytics', href: '#core-features' },
+  { name: 'Pricing', href: '#pricing' },
 ];
 
 const companyLinks = [
@@ -38,7 +41,7 @@ export default function Footer() {
           <div>
             <Logo className="h-10 w-auto mb-4" />
             <p className="text-sm text-muted-foreground">
-              TRACKERLY helps startups track time, tasks, and engagement with ease and a touch of fun.
+              TRACKERLY: Redefining remote work with AI-powered time and workflow management.
             </p>
             <div className="flex space-x-4 mt-6">
               {socialLinks.map((social) => (
