@@ -19,11 +19,10 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-transparent backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 max-w-screen-xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center space-x-2">
+        <Link href="/" className="flex items-center">
           <Logo className="h-8 w-auto" />
-          <h1 className="text-foreground font-bold text-xl hidden sm:block">Trackerly</h1>
         </Link>
 
         <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
@@ -31,7 +30,7 @@ export default function Navbar() {
             <Link
               key={item.label}
               href={item.href}
-              className="text-foreground/90 transition-colors hover:text-foreground"
+              className="text-primary-foreground/90 transition-colors hover:text-primary-foreground"
             >
               {item.label}
             </Link>
@@ -39,10 +38,10 @@ export default function Navbar() {
         </nav>
 
         <div className="hidden md:flex items-center space-x-2">
-          <Button variant="ghost" asChild className="text-foreground/90 hover:text-foreground">
+          <Button variant="ghost" asChild className="text-primary-foreground/90 hover:text-primary-foreground">
             <Link href="/signin">Sign In</Link>
           </Button>
-          <Button className="bg-primary text-primary-foreground hover:bg-primary/90 transition-opacity rounded-full px-4 py-1">
+          <Button className="bg-lightBluePrimary text-white hover:bg-lightBluePrimary/90 transition-opacity rounded-full px-4 py-1">
             Try for Free
           </Button>
         </div>
@@ -50,7 +49,7 @@ export default function Navbar() {
         <div className="md:hidden">
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-foreground">
+              <Button variant="ghost" size="icon" className="text-primary-foreground">
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Open menu</span>
               </Button>
@@ -73,7 +72,7 @@ export default function Navbar() {
                 <Button variant="outline" asChild className="w-full mt-4" onClick={() => setMobileMenuOpen(false)}>
                   <Link href="/signin">Sign In</Link>
                 </Button>
-                <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition-opacity rounded-full" onClick={() => setMobileMenuOpen(false)}>
+                <Button className="w-full bg-lightBluePrimary text-white hover:bg-lightBluePrimary/90 transition-opacity rounded-full" onClick={() => setMobileMenuOpen(false)}>
                   Try for Free
                 </Button>
               </div>
