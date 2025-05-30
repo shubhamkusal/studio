@@ -21,19 +21,24 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 const themes: Theme[] = ['light', 'blue', 'deep-dark'];
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<Theme>('blue'); // Default theme
+  const [theme, setThemeState] = useState<Theme>('blue'); // Default theme for SSR, client-side useEffect will override
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('trackerly-theme') as Theme | null;
+    let activeTheme: Theme = 'blue'; // Fallback default
+
     if (storedTheme && themes.includes(storedTheme)) {
-      setThemeState(storedTheme);
-      document.documentElement.className = storedTheme;
+      activeTheme = storedTheme;
+      // If a valid theme is found in localStorage, use it.
     } else {
-      // Set default theme if nothing in localStorage or invalid
+      // If no valid theme is in localStorage, set our default ('blue') into localStorage.
       localStorage.setItem('trackerly-theme', 'blue');
-      document.documentElement.className = 'theme-blue'; // Explicitly set default class name
+      // activeTheme is already 'blue' in this case.
     }
-  }, []);
+
+    setThemeState(activeTheme);
+    document.documentElement.className = `theme-${activeTheme}`;
+  }, []); // Runs once on client mount
 
   const setTheme = (newTheme: Theme) => {
     if (themes.includes(newTheme)) {
@@ -49,7 +54,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     setTheme(themes[nextIndex]);
   };
   
-  // Fallback to ensure html class is set if it somehow gets removed
+  // This useEffect ensures the class is updated whenever `theme` state changes from any source.
   useEffect(() => {
     document.documentElement.className = `theme-${theme}`;
   }, [theme]);
