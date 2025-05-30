@@ -18,45 +18,61 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-const themes: Theme[] = ['light', 'blue', 'deep-dark'];
+// Updated to cycle between only two themes for now as per urgent request
+const twoModeThemes: Theme[] = ['light', 'deep-dark'];
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<Theme>('blue'); // Default theme for SSR
+  // Default to 'light' theme for the two-mode cycle
+  const [theme, setThemeState] = useState<Theme>('light'); 
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('trackerly-theme') as Theme | null;
-    let activeTheme: Theme = 'blue'; // Fallback default
+    let activeTheme: Theme = 'light'; // Default to light for the two-mode system
 
-    if (storedTheme && themes.includes(storedTheme)) {
+    // If a theme is stored and it's one of the currently active two modes, use it
+    if (storedTheme && twoModeThemes.includes(storedTheme)) {
       activeTheme = storedTheme;
     } else {
-      // If no valid theme is in localStorage, or theme is invalid, set our default ('blue') into localStorage.
-      localStorage.setItem('trackerly-theme', 'blue');
-      // activeTheme remains 'blue' as initialized
+      // Otherwise, set the default ('light') and update localStorage
+      localStorage.setItem('trackerly-theme', activeTheme);
     }
-
-    // Apply the theme class immediately and then set the state
+    
+    // Apply the theme class immediately
     document.documentElement.className = `theme-${activeTheme}`;
     setThemeState(activeTheme);
   }, []); // Runs once on client mount
 
   const setTheme = (newTheme: Theme) => {
-    if (themes.includes(newTheme)) {
+    // Ensure the newTheme is one of the allowed cycle themes if direct setting is used elsewhere
+    if (twoModeThemes.includes(newTheme)) {
       localStorage.setItem('trackerly-theme', newTheme);
-      document.documentElement.className = `theme-${newTheme}`; // Apply class before setting state for immediate feedback
+      document.documentElement.className = `theme-${newTheme}`;
       setThemeState(newTheme);
+    } else {
+      // Fallback to the first theme in the cycle if an invalid theme is attempted
+      const fallbackTheme = twoModeThemes[0];
+      localStorage.setItem('trackerly-theme', fallbackTheme);
+      document.documentElement.className = `theme-${fallbackTheme}`;
+      setThemeState(fallbackTheme);
     }
   };
 
   const toggleTheme = () => {
-    const currentIndex = themes.indexOf(theme);
-    const nextIndex = (currentIndex + 1) % themes.length;
-    setTheme(themes[nextIndex]);
+    const currentIndex = twoModeThemes.indexOf(theme);
+    // If current theme is not in our two-mode cycle (e.g. old 'blue' from localStorage somehow slipped through initial check)
+    // default to the first theme in the cycle before toggling.
+    const nextIndex = (currentIndex === -1) 
+                      ? 0 // default to 'light' if current is 'blue'
+                      : (currentIndex + 1) % twoModeThemes.length;
+    const newTheme = twoModeThemes[nextIndex];
+    
+    localStorage.setItem('trackerly-theme', newTheme);
+    document.documentElement.className = `theme-${newTheme}`;
+    setThemeState(newTheme);
   };
   
-  // This secondary useEffect ensures the class is kept in sync if the theme state
-  // were to be changed by means other than the setTheme function (though unlikely in this setup).
-  // It also ensures the server-rendered state (if any different) gets corrected on hydration.
+  // This useEffect ensures the class is kept in sync if the theme state
+  // is changed by other means or for initial server-rendered state correction on hydration.
   useEffect(() => {
     document.documentElement.className = `theme-${theme}`;
   }, [theme]);

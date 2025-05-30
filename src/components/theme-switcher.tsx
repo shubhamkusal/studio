@@ -3,13 +3,14 @@
 
 import { useTheme, type Theme } from '@/context/theme-provider';
 import { Button } from '@/components/ui/button';
-import { Moon, Sun, Sunrise, Sunset } from 'lucide-react'; // Ensured Sunset is imported
+import { Moon, Sunrise, Sunset } from 'lucide-react'; // Sunset is imported but won't be used in two-mode
 import { motion, AnimatePresence } from 'framer-motion';
 
-const themeIcons: Record<Theme, JSX.Element> = {
+// Adjusted for the two-mode (Day/Night) cycle
+const themeIcons: Partial<Record<Theme, JSX.Element>> = {
   light: <Sunrise className="h-5 w-5" />, // Day Mode 🌅
-  blue: <Sunset className="h-5 w-5" />,  // Evening Mode 🌇
   'deep-dark': <Moon className="h-5 w-5" />, // Night Mode 🌙
+  // 'blue' (Sunset) is intentionally omitted for the current two-mode cycle
 };
 
 const iconVariants = {
@@ -21,6 +22,8 @@ const iconVariants = {
 export default function ThemeSwitcher() {
   const { theme, toggleTheme } = useTheme();
 
+  const currentIcon = themeIcons[theme] || <Sunrise className="h-5 w-5" />; // Fallback icon
+
   return (
     <Button
       variant="outline"
@@ -31,7 +34,7 @@ export default function ThemeSwitcher() {
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
-          key={theme}
+          key={theme} // Key ensures animation plays on theme change
           variants={iconVariants}
           initial="hidden"
           animate="visible"
@@ -39,7 +42,7 @@ export default function ThemeSwitcher() {
           transition={{ duration: 0.2 }}
           className="flex items-center justify-center"
         >
-          {themeIcons[theme]}
+          {currentIcon}
         </motion.div>
       </AnimatePresence>
     </Button>
