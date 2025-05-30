@@ -3,13 +3,13 @@
 
 import { useTheme, type Theme } from '@/context/theme-provider';
 import { Button } from '@/components/ui/button';
-import { Moon, Sun, Sunrise } from 'lucide-react';
+import { Moon, Sun, Sunrise, Sunset } from 'lucide-react'; // Added Sunset
 import { motion, AnimatePresence } from 'framer-motion';
 
 const themeIcons: Record<Theme, JSX.Element> = {
-  light: <Sunrise className="h-5 w-5" />,
-  blue: <Sun className="h-5 w-5" />, // Using Sun for blue/evening theme
-  'deep-dark': <Moon className="h-5 w-5" />,
+  light: <Sunrise className="h-5 w-5" />, // Day Mode
+  blue: <Sunset className="h-5 w-5" />,  // Evening Mode (changed from Sun to Sunset)
+  'deep-dark': <Moon className="h-5 w-5" />, // Night Mode
 };
 
 const iconVariants = {
@@ -26,7 +26,7 @@ export default function ThemeSwitcher() {
       variant="outline"
       size="icon"
       onClick={toggleTheme}
-      className="fixed bottom-5 right-5 z-50 h-12 w-12 rounded-full shadow-lg bg-card/80 backdrop-blur-sm hover:bg-card"
+      className="fixed bottom-5 right-5 z-50 h-12 w-12 rounded-full shadow-lg bg-card/80 backdrop-blur-sm hover:bg-card border-border/50 hover:border-primary transition-all duration-200 ease-in-out transform hover:scale-110"
       aria-label={`Switch to next theme (current: ${theme})`}
     >
       <AnimatePresence mode="wait" initial={false}>

@@ -21,7 +21,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 const themes: Theme[] = ['light', 'blue', 'deep-dark'];
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<Theme>('blue'); // Default theme for SSR, client-side useEffect will override
+  const [theme, setThemeState] = useState<Theme>('blue'); // Default theme for SSR
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('trackerly-theme') as Theme | null;
@@ -29,22 +29,22 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
     if (storedTheme && themes.includes(storedTheme)) {
       activeTheme = storedTheme;
-      // If a valid theme is found in localStorage, use it.
     } else {
-      // If no valid theme is in localStorage, set our default ('blue') into localStorage.
+      // If no valid theme is in localStorage, or theme is invalid, set our default ('blue') into localStorage.
       localStorage.setItem('trackerly-theme', 'blue');
-      // activeTheme is already 'blue' in this case.
+      activeTheme = 'blue';
     }
 
-    setThemeState(activeTheme);
+    // Apply the theme class immediately and then set the state
     document.documentElement.className = `theme-${activeTheme}`;
+    setThemeState(activeTheme);
   }, []); // Runs once on client mount
 
   const setTheme = (newTheme: Theme) => {
     if (themes.includes(newTheme)) {
       localStorage.setItem('trackerly-theme', newTheme);
+      document.documentElement.className = `theme-${newTheme}`; // Apply class before setting state for immediate feedback
       setThemeState(newTheme);
-      document.documentElement.className = `theme-${newTheme}`;
     }
   };
 
@@ -54,7 +54,9 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     setTheme(themes[nextIndex]);
   };
   
-  // This useEffect ensures the class is updated whenever `theme` state changes from any source.
+  // This secondary useEffect ensures the class is kept in sync if the theme state
+  // were to be changed by means other than the setTheme function (though unlikely in this setup).
+  // It also ensures the server-rendered state (if any different) gets corrected on hydration.
   useEffect(() => {
     document.documentElement.className = `theme-${theme}`;
   }, [theme]);
