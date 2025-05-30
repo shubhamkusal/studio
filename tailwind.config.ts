@@ -12,7 +12,7 @@ export default {
       fontFamily: {
         body: ['Inter', 'sans-serif'],
         headline: ['Inter', 'sans-serif'],
-        code: ['monospace'],
+        code: ['monospace', 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -88,10 +88,22 @@ export default {
             height: '0',
           },
         },
+        glow: {
+          '0%, 100%': { boxShadow: '0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary))' },
+          '50%': { boxShadow: '0 0 20px hsl(var(--primary)), 0 0 30px hsl(var(--primary))' },
+        },
+        subtleVibrate: {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '25%': { transform: 'translateX(-1px) translateY(-1px) rotate(-0.5deg)' },
+          '50%': { transform: 'translateX(1px) translateY(1px) rotate(0.5deg)' },
+          '75%': { transform: 'translateX(-1px) translateY(0px) rotate(0.2deg)' },
+        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'glow': 'glow 2s ease-in-out infinite',
+        'subtle-vibrate': 'subtleVibrate 0.3s ease-in-out',
       },
     },
   },
