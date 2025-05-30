@@ -1,3 +1,4 @@
+// src/components/landing/anomaly-detection-card.tsx
 'use client';
 
 import { useState } from 'react';
@@ -57,35 +58,35 @@ export default function AnomalyDetectionCard() {
       className="fade-in-section py-16 md:py-24"
     >
       <div className="container mx-auto max-w-screen-md px-4 sm:px-6 lg:px-8">
-        <Card className="shadow-xl">
+        <Card className="shadow-xl bg-card border-border/50">
           <CardHeader className="text-center">
             <Zap className="h-12 w-12 text-primary mx-auto mb-4" />
-            <CardTitle className="font-headline text-2xl sm:text-3xl">AI-Powered Anomaly Detection</CardTitle>
-            <CardDescription className="text-md">
-              Let TrackerlyY's AI analyze activity patterns and highlight potential risks for managers.
+            <CardTitle className="font-headline text-2xl sm:text-3xl text-card-foreground">AI-Powered Anomaly Detection</CardTitle>
+            <CardDescription className="text-md text-muted-foreground">
+              Let TRACKERLY's AI analyze activity patterns and highlight potential risks for managers.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="activitySummary" className="font-medium">Observed Activity Summary</Label>
+              <Label htmlFor="activitySummary" className="font-medium text-card-foreground">Observed Activity Summary</Label>
               <Textarea
                 id="activitySummary"
                 value={activitySummary}
                 onChange={(e) => setActivitySummary(e.target.value)}
                 placeholder="Enter a summary of user activity..."
                 rows={4}
-                className="bg-secondary/50"
+                className="bg-secondary/30 border-border/70 text-foreground"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="teamBehaviorNorms" className="font-medium">Team Behavior Norms</Label>
+              <Label htmlFor="teamBehaviorNorms" className="font-medium text-card-foreground">Team Behavior Norms</Label>
               <Textarea
                 id="teamBehaviorNorms"
                 value={teamBehaviorNorms}
                 onChange={(e) => setTeamBehaviorNorms(e.target.value)}
                 placeholder="Describe normal team behavior..."
                 rows={3}
-                className="bg-secondary/50"
+                 className="bg-secondary/30 border-border/70 text-foreground"
               />
             </div>
           </CardContent>
@@ -101,7 +102,7 @@ export default function AnomalyDetectionCard() {
             {anomalyDescription && (
               <div className="w-full p-4 border border-primary/50 rounded-md bg-primary/10">
                 <h4 className="font-semibold text-lg mb-2 text-primary">Anomaly Report:</h4>
-                <p className="text-sm text-foreground whitespace-pre-wrap">{anomalyDescription}</p>
+                <p className="text-sm text-card-foreground whitespace-pre-wrap">{anomalyDescription}</p>
               </div>
             )}
           </CardFooter>

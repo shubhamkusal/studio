@@ -7,49 +7,7 @@ body {
 }
 
 @layer base {
-  :root {
-    --background: 230 50% 97%; /* Very light grayish blue */
-    --foreground: 235 33% 20%; /* Dark desaturated blue */
-    --card: 0 0% 100%; /* White */
-    --card-foreground: 235 33% 20%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 235 33% 20%;
-    --primary: 220 69% 61%; /* lightBluePrimary #4e7dd9 */
-    --primary-foreground: 220 20% 98%; /* Almost white */
-    --secondary: 230 40% 90%; /* Lighter grayish blue */
-    --secondary-foreground: 235 33% 30%;
-    --muted: 230 30% 85%;
-    --muted-foreground: 235 25% 55%;
-    --accent: 261 92% 72%; /* neonPurpleAccent #a174f8 */
-    --accent-foreground: 220 20% 98%; /* Almost white */
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 230 30% 80%;
-    --input: 230 30% 80%;
-    --ring: 220 69% 55%; /* Slightly darker primary */
-    
-    --chart-1: 220 70% 50%;
-    --chart-2: 261 80% 65%;
-    --chart-3: 197 37% 44%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-
-    --sidebar-background: 230 45% 94%;
-    --sidebar-foreground: 235 33% 25%;
-    --sidebar-primary: 220 69% 61%;
-    --sidebar-primary-foreground: 220 20% 98%;
-    --sidebar-accent: 261 92% 72%;
-    --sidebar-accent-foreground: 220 20% 98%;
-    --sidebar-border: 230 30% 75%;
-    --sidebar-ring: 220 69% 55%;
-
-    /* Gradients for light theme (subtle) */
-    --gradient-from: 230 50% 97%;
-    --gradient-to: 220 60% 95%;
-  }
-
-  .dark {
+  :root, .theme-blue { /* Evening Mode (Default Discord-like) */
     --background: 235 33% 16%; /* darkBlue #1e1f36 */
     --foreground: 220 20% 95%; /* Off-white / Light Gray */
     --card: 235 30% 20%; /* Darker than background */
@@ -75,6 +33,7 @@ body {
     --chart-3: 197 50% 50%;
     --chart-4: 43 80% 70%;
     --chart-5: 27 90% 70%;
+    --radius: 0.5rem;
 
     --sidebar-background: 235 30% 18%;
     --sidebar-foreground: 220 20% 90%;
@@ -85,9 +44,90 @@ body {
     --sidebar-border: 235 25% 28%;
     --sidebar-ring: 220 80% 70%;
 
-    /* Gradients for dark theme */
     --gradient-from: 235 33% 16%; /* darkBlue #1e1f36 */
     --gradient-to: 235 33% 25%;   /* anotherPurple #2c2f56 */
+  }
+
+  .theme-light { /* Morning Mode */
+    --background: 230 50% 97%; /* Very light grayish blue */
+    --foreground: 235 33% 20%; /* Dark desaturated blue */
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 235 33% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 235 33% 20%;
+    --primary: 220 69% 58%; /* Slightly desaturated lightBluePrimary for light bg */
+    --primary-foreground: 0 0% 100%; 
+    --secondary: 230 40% 90%; /* Lighter grayish blue */
+    --secondary-foreground: 235 33% 30%;
+    --muted: 230 30% 85%;
+    --muted-foreground: 235 25% 55%;
+    --accent: 261 85% 65%; /* Slightly desaturated neonPurpleAccent */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 230 30% 80%;
+    --input: 230 30% 80%;
+    --ring: 220 69% 55%; 
+    
+    --chart-1: 220 70% 50%;
+    --chart-2: 261 80% 65%;
+    --chart-3: 197 37% 44%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+
+    --sidebar-background: 230 45% 94%;
+    --sidebar-foreground: 235 33% 25%;
+    --sidebar-primary: 220 69% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 261 85% 65%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 230 30% 75%;
+    --sidebar-ring: 220 69% 55%;
+
+    --gradient-from: 230 50% 97%;
+    --gradient-to: 220 60% 95%;
+  }
+
+  .theme-deep-dark { /* Night Mode */
+    --background: 240 10% 4%; /* Very dark, almost black */
+    --foreground: 240 5% 90%; /* Light gray */
+    --card: 240 8% 10%; 
+    --card-foreground: 240 5% 85%;
+    --popover: 240 7% 8%;
+    --popover-foreground: 240 5% 85%;
+    --primary: 220 75% 65%; /* Brighter primary for deep dark */
+    --primary-foreground: 240 10% 10%;
+    --secondary: 240 7% 12%; 
+    --secondary-foreground: 240 5% 80%;
+    --muted: 240 6% 15%;
+    --muted-foreground: 240 5% 60%;
+    --accent: 261 90% 75%; /* Brighter accent for deep dark */
+    --accent-foreground: 240 10% 10%;
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5% 18%;
+    --input: 240 5% 18%;
+    --ring: 220 85% 75%; 
+    
+    --chart-1: 220 75% 65%;
+    --chart-2: 261 85% 70%;
+    --chart-3: 197 55% 55%;
+    --chart-4: 43 85% 75%;
+    --chart-5: 27 95% 75%;
+    --radius: 0.5rem;
+
+    --sidebar-background: 240 9% 9%;
+    --sidebar-foreground: 240 5% 88%;
+    --sidebar-primary: 220 75% 65%;
+    --sidebar-primary-foreground: 240 10% 10%;
+    --sidebar-accent: 261 90% 75%;
+    --sidebar-accent-foreground: 240 10% 10%;
+    --sidebar-border: 240 5% 15%;
+    --sidebar-ring: 220 85% 75%;
+
+    --gradient-from: 240 10% 4%; 
+    --gradient-to: 240 10% 8%;
   }
 }
 
@@ -96,7 +136,9 @@ body {
     @apply border-border;
   }
   body {
-    @apply bg-discord-gradient text-foreground;
+    @apply bg-background text-foreground;
+    background-image: linear-gradient(to bottom right, hsl(var(--gradient-from)), hsl(var(--gradient-to)));
+    min-height: 100vh;
   }
 }
 

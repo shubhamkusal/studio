@@ -1,3 +1,4 @@
+// src/components/landing/hero-section.tsx
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -11,7 +12,7 @@ export default function HeroSection() {
   return (
     <section 
       ref={sectionRef as React.RefObject<HTMLElement>} 
-      className="fade-in-section container mx-auto flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] py-16 px-4 sm:px-6 lg:px-8 text-center"
+      className="fade-in-section container mx-auto flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] py-16 px-4 sm:px-6 lg:px-8 text-center" // Ensure enough height minus navbar
     >
       <AnimatedController />
       
@@ -24,8 +25,8 @@ export default function HeroSection() {
         <h1 className="font-headline text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6 text-foreground">
           Redefining Remote Work
         </h1>
-        <p className="text-lg sm:text-xl text-primary/80 max-w-xl mx-auto mb-10">
-          Clock-in. Get verified. Track your day the smart way with Trackerly.
+        <p className="text-lg sm:text-xl text-primary/90 max-w-xl mx-auto mb-10">
+          Clock-in. Get verified. Track your day the smart way with TRACKERLY.
         </p>
         <Button 
           size="lg" 

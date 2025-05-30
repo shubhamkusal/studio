@@ -1,3 +1,4 @@
+// src/components/landing/how-it-works-section.tsx
 'use client';
 
 import Image from 'next/image';
@@ -9,22 +10,22 @@ const steps = [
   {
     stepNumber: 1,
     title: 'Clock In & Start Your Day',
-    description: 'Easily clock in with a single click. TrackerlyY starts monitoring your work session seamlessly.',
-    illustration: 'https://placehold.co/400x300/4e7dd9/FFFFFF.png?text=Step+1', // Primary color
+    description: 'Easily clock in with a single click. TRACKERLY starts monitoring your work session seamlessly.',
+    illustration: 'https://placehold.co/400x300.png',
     aiHint: 'employee computer desk',
   },
   {
     stepNumber: 2,
     title: 'Get Verified Smartly',
     description: 'Engage with our fun, quick puzzle checks at random intervals to verify active work.',
-    illustration: 'https://placehold.co/400x300/a174f8/FFFFFF.png?text=Step+2', // Accent color
+    illustration: 'https://placehold.co/400x300.png',
     aiHint: 'puzzle solving concept',
   },
   {
     stepNumber: 3,
     title: 'Track Task Progress',
     description: 'Log time against specific tasks and projects, keeping everyone aligned and informed.',
-    illustration: 'https://placehold.co/400x300/66c2ff/000000.png?text=Step+3', // A light blue/cyan
+    illustration: 'https://placehold.co/400x300.png', 
     aiHint: 'progress chart interface',
   },
 ];
@@ -36,15 +37,15 @@ export default function HowItWorksSection() {
     <section 
       ref={sectionRef as React.RefObject<HTMLElement>} 
       id="how-it-works" 
-      className="fade-in-section py-16 md:py-24 bg-background/70" // Adjusted background
+      className="fade-in-section py-16 md:py-24" 
     >
       <div className="container mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="font-headline text-3xl sm:text-4xl font-bold tracking-tight mb-4 text-foreground">
-            How Trackerly<span className="text-primary">Y</span> Works
+            How TRACKERLY Works
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Getting started with TrackerlyY is simple. Follow these three easy steps.
+            Getting started with TRACKERLY is simple. Follow these three easy steps.
           </p>
         </div>
 

@@ -1,3 +1,4 @@
+// src/components/landing/interactive-dashboard-section.tsx
 'use client';
 
 import Image from 'next/image';
@@ -17,8 +18,8 @@ export default function InteractiveDashboardSection() {
     >
       <div className="container mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16">
-          <h2 className="font-headline text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-            Experience Trackerly<span className="text-primary">Y</span> in Action
+          <h2 className="font-headline text-3xl sm:text-4xl font-bold tracking-tight mb-4 text-foreground">
+            Experience TRACKERLY in Action
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             See a glimpse of our intuitive dashboard designed for clarity and efficiency.
@@ -27,8 +28,8 @@ export default function InteractiveDashboardSection() {
 
         <div className="relative rounded-lg shadow-2xl overflow-hidden border border-border p-2 bg-card">
           <Image
-            src="https://placehold.co/1200x750/E0E7FF/4F46E5.png?text=TrackerlyY+Dashboard+Mockup"
-            alt="TrackerlyY Dashboard Mockup"
+            src="https://placehold.co/1200x750.png?text=TRACKERLY+Dashboard+Mockup"
+            alt="TRACKERLY Dashboard Mockup"
             width={1200}
             height={750}
             className="rounded-md"

@@ -1,3 +1,4 @@
+// src/components/landing/why-trackerly-section.tsx
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,7 +26,7 @@ const features = [
   },
   {
     icon: ActivityInsightsIcon,
-    title: 'Comprehensive Activity Insights',
+    title: 'Productivity & Activity Insights', // Updated title
     description: 'Visualize productivity trends and gain actionable insights to optimize team performance.',
   },
 ];
@@ -37,15 +38,15 @@ export default function WhyTrackerlySection() {
     <section 
       ref={sectionRef as React.RefObject<HTMLElement>} 
       id="solutions" 
-      className="fade-in-section py-16 md:py-24 bg-background/70" // Adjusted background
+      className="fade-in-section py-16 md:py-24" 
     >
       <div className="container mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="font-headline text-3xl sm:text-4xl font-bold tracking-tight mb-4 text-foreground">
-            Why <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">TrackerlyY</span>?
+            Why <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">TRACKERLY</span>?
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover the features that make TrackerlyY the ultimate productivity companion for modern teams.
+            Discover the features that make TRACKERLY the ultimate productivity companion for modern teams.
           </p>
         </div>
 
@@ -53,7 +54,7 @@ export default function WhyTrackerlySection() {
           {features.map((feature, index) => (
             <Card key={index} className="text-center bg-card hover:shadow-xl transition-shadow duration-300 border-border/50">
               <CardHeader className="items-center">
-                <div className="p-3 rounded-full bg-primary/20 mb-4 inline-block"> {/* Adjusted icon bg */}
+                <div className="p-3 rounded-full bg-primary/10 mb-4 inline-block"> 
                   <feature.icon className="h-10 w-10 text-primary" />
                 </div>
                 <CardTitle className="font-headline text-xl text-card-foreground">{feature.title}</CardTitle>

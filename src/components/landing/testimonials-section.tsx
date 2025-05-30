@@ -1,3 +1,4 @@
+// src/components/landing/testimonials-section.tsx
 'use client';
 
 import Image from 'next/image';
@@ -24,8 +25,8 @@ const testimonialsData: Testimonial[] = [
     name: 'Sarah Chen',
     title: 'Founder & CEO',
     company: 'Innovatech Solutions',
-    quote: "TrackerlyY has revolutionized how we manage our remote team. The smart verifications are genius and activity insights are invaluable!",
-    avatar: 'https://placehold.co/100x100/4e7dd9/FFFFFF.png?text=SC', // Primary color
+    quote: "TRACKERLY has revolutionized how we manage our remote team. The smart verifications are genius and activity insights are invaluable!",
+    avatar: 'https://placehold.co/100x100.png?text=SC', 
     stars: 5,
     aiHint: 'woman portrait professional',
   },
@@ -34,8 +35,8 @@ const testimonialsData: Testimonial[] = [
     name: 'David Miller',
     title: 'CTO',
     company: 'NextGen Startups',
-    quote: "The ease of use and the fun gamified elements make TrackerlyY a hit with our developers. Productivity is up!",
-    avatar: 'https://placehold.co/100x100/a174f8/FFFFFF.png?text=DM', // Accent color
+    quote: "The ease of use and the fun gamified elements make TRACKERLY a hit with our developers. Productivity is up!",
+    avatar: 'https://placehold.co/100x100.png?text=DM', 
     stars: 5,
     aiHint: 'man portrait tech',
   },
@@ -44,8 +45,8 @@ const testimonialsData: Testimonial[] = [
     name: 'Jessica Lee',
     title: 'Operations Manager',
     company: 'Creative Minds Inc.',
-    quote: "We've tried other trackers, but TrackerlyY's balance of monitoring and trust is perfect for our creative team.",
-    avatar: 'https://placehold.co/100x100/66c2ff/000000.png?text=JL', // Light blue
+    quote: "We've tried other trackers, but TRACKERLY's balance of monitoring and trust is perfect for our creative team.",
+    avatar: 'https://placehold.co/100x100.png?text=JL', 
     stars: 4,
     aiHint: 'woman smiling office',
   },
@@ -68,6 +69,7 @@ export default function TestimonialsSection() {
       nextTestimonial();
     }, 5000); 
     return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIndex]);
 
 
@@ -84,7 +86,7 @@ export default function TestimonialsSection() {
             Loved by Startup <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Founders</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Hear what our users have to say about TrackerlyY.
+            Hear what our users have to say about TRACKERLY.
           </p>
         </div>
 
@@ -145,3 +147,4 @@ export default function TestimonialsSection() {
     </section>
   );
 }
+

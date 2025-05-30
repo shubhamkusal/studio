@@ -1,3 +1,4 @@
+// src/components/layout/footer.tsx
 import Link from 'next/link';
 import Logo from '@/components/icons/logo';
 import { Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
@@ -10,17 +11,17 @@ const socialLinks = [
 ];
 
 const productLinks = [
-  { name: 'Time Tracking', href: '#' },
-  { name: 'Productivity Monitoring', href: '#' },
-  { name: 'Smart Verifications', href: '#' },
+  { name: 'Time Tracking', href: '#solutions' },
+  { name: 'Productivity Monitoring', href: '#solutions' },
+  { name: 'Smart Verifications', href: '#solutions' },
   { name: 'Integrations', href: '#' },
 ];
 
 const companyLinks = [
-  { name: 'About Us', href: '#' },
+  { name: 'About Us', href: '#company' },
   { name: 'Careers', href: '#' },
   { name: 'Blog', href: '#' },
-  { name: 'Contact Us', href: 'mailto:support@trackerlyy.com' },
+  { name: 'Contact Us', href: 'mailto:support@trackerly.com' },
 ];
 
 const legalLinks = [
@@ -31,13 +32,13 @@ const legalLinks = [
 
 export default function Footer() {
   return (
-    <footer className="bg-background/80 text-secondary-foreground py-12 md:py-16 border-t border-border/50">
+    <footer className="bg-background/80 text-secondary-foreground py-12 md:py-16 border-t border-border/50 mt-auto">
       <div className="container mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           <div>
             <Logo className="h-10 w-auto mb-4" />
             <p className="text-sm text-muted-foreground">
-              TrackerlyY helps startups track time, tasks, and engagement with ease and a touch of fun.
+              TRACKERLY helps startups track time, tasks, and engagement with ease and a touch of fun.
             </p>
             <div className="flex space-x-4 mt-6">
               {socialLinks.map((social) => (
@@ -90,7 +91,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-border/50 pt-8 text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} TrackerlyY. All rights reserved.
+          &copy; {new Date().getFullYear()} TRACKERLY. All rights reserved.
         </div>
       </div>
     </footer>
