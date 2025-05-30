@@ -2,12 +2,12 @@
 import type { SVGProps } from 'react';
 
 const Logo = (props: SVGProps<SVGSVGElement>) => (
-  <svg 
-    width="200" 
-    height="40" 
-    viewBox="0 0 200 40" 
-    fill="none" 
-    xmlns="http://www.w3.org/2000/svg" 
+  <svg
+    width="200"
+    height="40"
+    viewBox="0 0 200 40"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
     aria-labelledby="trackerlyLogoTitle"
     role="img"
     {...props}
@@ -37,7 +37,7 @@ const Logo = (props: SVGProps<SVGSVGElement>) => (
       >
         T
       </text>
-      
+
       {/* R with bite - text part */}
       <text
         x="32"
@@ -50,36 +50,35 @@ const Logo = (props: SVGProps<SVGSVGElement>) => (
       >
         R
       </text>
-      {/* Bite effect on the R */}
-      {/* The "R" character's top bowl is approximately from y=9 to y=19, centered around x=32 + half_width_of_R_bowl.
-          Assuming R is ~20 units wide, its text anchor x=32. Its bowl extends to the right.
-          A good position for the bite on R would be around x=46, y=14 for a font size of 28.
-      */}
-      <circle 
-        cx="46" 
-        cy="14.5" 
-        r="4.5" 
-        fill="hsl(var(--background))" 
+      {/* Bite effect on the R - changed to ellipse and updated clock hands */}
+      <ellipse
+        cx="46"
+        cy="14.5"
+        rx="4.5"
+        ry="4.2" /* Slightly squashed ellipse */
+        fill="hsl(var(--background))"
       />
-      {/* Clock hands inside the bite */}
-      <line 
-        x1="46" y1="14.5" 
-        x2="46" y2="11.5" 
-        stroke="hsl(var(--accent))" 
-        strokeWidth="1" 
+      {/* Clock hands inside the bite - 10:10 position, slightly thicker */}
+      {/* Hour hand (short, towards 10) */}
+      <line
+        x1="46" y1="14.5"
+        x2="44.27" y2="13.5"  /* Approx. 10 o'clock position */
+        stroke="hsl(var(--accent))"
+        strokeWidth="1.25"
         strokeLinecap="round"
-      /> 
-      <line 
-        x1="46" y1="14.5" 
-        x2="49" y2="14.5" 
-        stroke="hsl(var(--accent))" 
-        strokeWidth="1" 
+      />
+      {/* Minute hand (long, towards 2 (10 mins)) */}
+      <line
+        x1="46" y1="14.5"
+        x2="47.4" y2="16.92" /* Approx. 2 o'clock position */
+        stroke="hsl(var(--accent))"
+        strokeWidth="1.25"
         strokeLinecap="round"
       />
 
       {/* ACKERLY */}
       <text
-        x="55"
+        x="55" /* Adjusted x position to account for R */
         y="29"
         fontFamily="Inter, sans-serif"
         fontSize="28"
