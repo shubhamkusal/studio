@@ -14,7 +14,7 @@ interface PuzzleVerificationModalProps {
 const puzzles = [
   { 
     id: 1, 
-    image: "https://placehold.co/300x200/E0E7FF/4F46E5?text=Puzzle+1",
+    image: "https://placehold.co/300x200/E0E7FF/4F46E5.png?text=Puzzle+1",
     question: "Which of these is a cat?",
     options: ["Dog", "Cat", "Bird"],
     answer: "Cat",
@@ -22,7 +22,7 @@ const puzzles = [
   },
   { 
     id: 2, 
-    image: "https://placehold.co/300x200/B19CD9/FFFFFF?text=Puzzle+2",
+    image: "https://placehold.co/300x200/B19CD9/FFFFFF.png?text=Puzzle+2",
     question: "What is 2+2?",
     options: ["3", "4", "5"],
     answer: "4",

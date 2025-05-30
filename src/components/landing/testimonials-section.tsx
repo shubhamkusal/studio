@@ -25,7 +25,7 @@ const testimonialsData: Testimonial[] = [
     title: 'Founder & CEO',
     company: 'Innovatech Solutions',
     quote: "TrackerlyY has revolutionized how we manage our remote team. The smart verifications are genius and activity insights are invaluable!",
-    avatar: 'https://placehold.co/100x100/4e7dd9/FFFFFF?text=SC', // Primary color
+    avatar: 'https://placehold.co/100x100/4e7dd9/FFFFFF.png?text=SC', // Primary color
     stars: 5,
     aiHint: 'woman portrait professional',
   },
@@ -35,7 +35,7 @@ const testimonialsData: Testimonial[] = [
     title: 'CTO',
     company: 'NextGen Startups',
     quote: "The ease of use and the fun gamified elements make TrackerlyY a hit with our developers. Productivity is up!",
-    avatar: 'https://placehold.co/100x100/a174f8/FFFFFF?text=DM', // Accent color
+    avatar: 'https://placehold.co/100x100/a174f8/FFFFFF.png?text=DM', // Accent color
     stars: 5,
     aiHint: 'man portrait tech',
   },
@@ -45,7 +45,7 @@ const testimonialsData: Testimonial[] = [
     title: 'Operations Manager',
     company: 'Creative Minds Inc.',
     quote: "We've tried other trackers, but TrackerlyY's balance of monitoring and trust is perfect for our creative team.",
-    avatar: 'https://placehold.co/100x100/66c2ff/000000?text=JL', // Light blue
+    avatar: 'https://placehold.co/100x100/66c2ff/000000.png?text=JL', // Light blue
     stars: 4,
     aiHint: 'woman smiling office',
   },

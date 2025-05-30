@@ -27,7 +27,7 @@ export default function InteractiveDashboardSection() {
 
         <div className="relative rounded-lg shadow-2xl overflow-hidden border border-border p-2 bg-card">
           <Image
-            src="https://placehold.co/1200x750/E0E7FF/4F46E5?text=TrackerlyY+Dashboard+Mockup"
+            src="https://placehold.co/1200x750/E0E7FF/4F46E5.png?text=TrackerlyY+Dashboard+Mockup"
             alt="TrackerlyY Dashboard Mockup"
             width={1200}
             height={750}

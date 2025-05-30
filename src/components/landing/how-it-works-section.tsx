@@ -10,21 +10,21 @@ const steps = [
     stepNumber: 1,
     title: 'Clock In & Start Your Day',
     description: 'Easily clock in with a single click. TrackerlyY starts monitoring your work session seamlessly.',
-    illustration: 'https://placehold.co/400x300/4e7dd9/FFFFFF?text=Step+1', // Primary color
+    illustration: 'https://placehold.co/400x300/4e7dd9/FFFFFF.png?text=Step+1', // Primary color
     aiHint: 'employee computer desk',
   },
   {
     stepNumber: 2,
     title: 'Get Verified Smartly',
     description: 'Engage with our fun, quick puzzle checks at random intervals to verify active work.',
-    illustration: 'https://placehold.co/400x300/a174f8/FFFFFF?text=Step+2', // Accent color
+    illustration: 'https://placehold.co/400x300/a174f8/FFFFFF.png?text=Step+2', // Accent color
     aiHint: 'puzzle solving concept',
   },
   {
     stepNumber: 3,
     title: 'Track Task Progress',
     description: 'Log time against specific tasks and projects, keeping everyone aligned and informed.',
-    illustration: 'https://placehold.co/400x300/66c2ff/000000?text=Step+3', // A light blue/cyan
+    illustration: 'https://placehold.co/400x300/66c2ff/000000.png?text=Step+3', // A light blue/cyan
     aiHint: 'progress chart interface',
   },
 ];
