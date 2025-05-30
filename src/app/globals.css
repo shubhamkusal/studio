@@ -136,15 +136,15 @@ body {
     @apply border-border;
     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 200ms;
+    transition-duration: 200ms; /* General transition for elements */
   }
   body {
     @apply bg-background text-foreground;
     background-image: linear-gradient(to bottom right, hsl(var(--gradient-from)), hsl(var(--gradient-to)));
     min-height: 100vh;
-    /* Add transition for background and text color for smoother theme changes */
-    transition-property: background-color, color;
-    transition-duration: 300ms; /* Adjust duration as needed */
+    /* Body specific transitions for background properties */
+    transition-property: background-color, color, background-image; /* Added background-image for gradient transition */
+    transition-duration: 300ms; 
     transition-timing-function: ease-in-out;
   }
 }

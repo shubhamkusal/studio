@@ -32,7 +32,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     } else {
       // If no valid theme is in localStorage, or theme is invalid, set our default ('blue') into localStorage.
       localStorage.setItem('trackerly-theme', 'blue');
-      activeTheme = 'blue';
+      // activeTheme remains 'blue' as initialized
     }
 
     // Apply the theme class immediately and then set the state
