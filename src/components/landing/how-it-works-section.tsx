@@ -1,3 +1,4 @@
+
 // src/components/landing/how-it-works-section.tsx
 'use client';
 
@@ -11,21 +12,21 @@ const steps = [
     stepNumber: 1,
     title: 'Clock In & Start Your Day',
     description: 'Easily clock in with a single click. TRACKERLY starts monitoring your work session seamlessly.',
-    illustration: 'https://placehold.co/400x300.png',
+    illustration: 'https://placehold.co/400x300.png?text=',
     aiHint: 'employee computer desk',
   },
   {
     stepNumber: 2,
     title: 'Get Verified Smartly',
     description: 'Engage with our fun, quick puzzle checks at random intervals to verify active work.',
-    illustration: 'https://placehold.co/400x300.png',
+    illustration: 'https://placehold.co/400x300.png?text=',
     aiHint: 'puzzle solving concept',
   },
   {
     stepNumber: 3,
     title: 'Track Task Progress',
     description: 'Log time against specific tasks and projects, keeping everyone aligned and informed.',
-    illustration: 'https://placehold.co/400x300.png', 
+    illustration: 'https://placehold.co/400x300.png?text=', 
     aiHint: 'progress chart interface',
   },
 ];
