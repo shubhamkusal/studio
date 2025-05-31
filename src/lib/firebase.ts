@@ -2,7 +2,7 @@
 // src/lib/firebase.ts
 import { initializeApp, getApps, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
-// import { getFirestore, type Firestore } from 'firebase/firestore';
+import { getFirestore, type Firestore } from 'firebase/firestore'; // Enabled Firestore
 // import { getStorage, type FirebaseStorage } from 'firebase/storage';
 // import { getAnalytics, type Analytics } from "firebase/analytics";
 
@@ -18,7 +18,7 @@ const firebaseConfig = {
 
 let app: FirebaseApp;
 let auth: Auth;
-// let firestore: Firestore;
+let firestore: Firestore; // Declared Firestore
 // let storage: FirebaseStorage;
 // let analytics: Analytics;
 
@@ -29,10 +29,10 @@ if (getApps().length === 0) {
 }
 
 auth = getAuth(app);
-// firestore = getFirestore(app);
+firestore = getFirestore(app); // Initialized Firestore
 // storage = getStorage(app);
 // if (typeof window !== 'undefined') {
 //   analytics = getAnalytics(app);
 // }
 
-export { app, auth /*, firestore, storage, analytics */ };
+export { app, auth, firestore /*, storage, analytics */ }; // Exported Firestore
