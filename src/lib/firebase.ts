@@ -16,6 +16,16 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
+// Diagnostic check for the API key
+if (!firebaseConfig.apiKey) {
+  console.warn(
+    `🔴🔴🔴 WARNING: Firebase API Key (NEXT_PUBLIC_FIREBASE_API_KEY) is missing or undefined. 
+    Firebase services will not work correctly. 
+    Please ensure it is set in your .env file (for local development) or in your hosting provider's environment variable settings (for deployed environments). 🔴🔴🔴`
+  );
+}
+
+
 let app: FirebaseApp;
 let auth: Auth;
 let firestore: Firestore; // Declared Firestore
@@ -38,4 +48,3 @@ const googleProvider = new GoogleAuthProvider(); // Added GoogleAuthProvider ins
 // }
 
 export { app, auth, firestore, googleProvider /*, storage, analytics */ }; // Exported Firestore and googleProvider
-
