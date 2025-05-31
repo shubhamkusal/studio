@@ -2,7 +2,7 @@
 // src/components/auth/auth-form.tsx
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, type AuthError } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase'; // Imported googleProvider
@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, KeyRound, UserPlus } from 'lucide-react';
+import { Loader2, KeyRound, UserPlus, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 
 interface AuthFormProps {
@@ -46,6 +46,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isApiKeyPotentiallyInvalid, setIsApiKeyPotentiallyInvalid] = useState(false);
+  const [apiKeyErrorMessage, setApiKeyErrorMessage] = useState<string | null>(null);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -54,8 +56,20 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const buttonText = mode === 'signin' ? 'Sign In' : 'Sign Up';
   const Icon = mode === 'signin' ? KeyRound : UserPlus;
 
+  useEffect(() => {
+    // Client-side check for API key status on component mount
+    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    if (!apiKey || apiKey.includes("YOUR_") || apiKey.includes("PASTE_") || apiKey.includes("XXXXX") || apiKey.length < 20) {
+      setIsApiKeyPotentiallyInvalid(true);
+      setApiKeyErrorMessage("CRITICAL CONFIGURATION ISSUE: Your Firebase API Key (NEXT_PUBLIC_FIREBASE_API_KEY) appears to be missing, a placeholder, or invalid. Please check your application's .env file (and restart your server) or your hosting provider's environment variable settings. Authentication will not work until this is fixed.");
+    }
+  }, []);
+
+
   const handleEmailPasswordSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    if (isApiKeyPotentiallyInvalid) return; // Prevent submission if API key looks bad
+
     setIsLoading(true);
     setError(null);
 
@@ -99,7 +113,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             errorMessage = 'Password is too weak. It should be at least 6 characters.';
             break;
           case 'auth/api-key-not-valid':
-             errorMessage = 'Firebase API Key is not valid. Please check your .env file or hosting provider configuration.';
+             errorMessage = 'Firebase API Key is not valid. Please check your .env file (and restart your server) or your hosting provider configuration.';
              break;
           default:
             errorMessage = authError.message || errorMessage;
@@ -118,6 +132,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
   };
 
   const handleGoogleSignIn = async () => {
+    if (isApiKeyPotentiallyInvalid) return; // Prevent submission if API key looks bad
+    
     setIsLoading(true);
     setError(null);
     try {
@@ -139,7 +155,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             errorMessage = 'An account already exists with the same email address but different sign-in credentials.';
             break;
            case 'auth/api-key-not-valid':
-             errorMessage = 'Firebase API Key is not valid. Please check your .env file or hosting provider configuration.';
+             errorMessage = 'Firebase API Key is not valid. Please check your .env file (and restart your server) or your hosting provider configuration.';
              break;
           default:
             errorMessage = authError.message || errorMessage;
@@ -169,6 +185,14 @@ export default function AuthForm({ mode }: AuthFormProps) {
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
+          {isApiKeyPotentiallyInvalid && apiKeyErrorMessage && (
+            <div className="mb-6 p-3 rounded-md bg-destructive/10 border border-destructive text-destructive text-sm">
+              <div className="flex items-start">
+                <AlertTriangle className="h-5 w-5 mr-2 shrink-0 mt-0.5" />
+                <p>{apiKeyErrorMessage}</p>
+              </div>
+            </div>
+          )}
           <form onSubmit={handleEmailPasswordSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email">Email Address</Label>
@@ -180,7 +204,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
                 placeholder="you@example.com"
                 required
                 className="bg-secondary/30 border-border/70"
-                disabled={isLoading}
+                disabled={isLoading || isApiKeyPotentiallyInvalid}
               />
             </div>
             <div className="space-y-2">
@@ -193,11 +217,11 @@ export default function AuthForm({ mode }: AuthFormProps) {
                 placeholder="••••••••"
                 required
                 className="bg-secondary/30 border-border/70"
-                disabled={isLoading}
+                disabled={isLoading || isApiKeyPotentiallyInvalid}
               />
             </div>
-            {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
+            {error && !isApiKeyPotentiallyInvalid && <p className="text-sm text-destructive">{error}</p>}
+            <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading || isApiKeyPotentiallyInvalid}>
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Icon className="mr-2 h-4 w-4" /> }
               {buttonText}
             </Button>
@@ -218,10 +242,10 @@ export default function AuthForm({ mode }: AuthFormProps) {
             type="button"
             variant="outline"
             onClick={handleGoogleSignIn}
-            disabled={isLoading}
+            disabled={isLoading || isApiKeyPotentiallyInvalid}
             className="w-full hover:bg-secondary/50 border-border/70"
           >
-            {isLoading && email === '' && password === '' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon /> }
+            {isLoading && email === '' && password === '' && !isApiKeyPotentiallyInvalid ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon /> }
             Sign {mode === 'signin' ? 'in' : 'up'} with Google
           </Button>
 
@@ -250,4 +274,3 @@ export default function AuthForm({ mode }: AuthFormProps) {
     </div>
   );
 }
-
