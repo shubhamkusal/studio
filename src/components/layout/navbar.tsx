@@ -20,7 +20,7 @@ const navItems = [
   { label: 'How It Works', href: '#how-it-works' },
   { label: 'Pricing', href: '#pricing' },
   { label: 'Company', href: '#company' },
-  { label: 'Contact', href: 'mailto:support@trackerly.com'}
+  { label: 'Contact', href: '/contact'} // Updated href
 ];
 
 export default function Navbar() {
