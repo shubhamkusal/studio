@@ -1,7 +1,7 @@
 
 // src/lib/firebase.ts
 import { initializeApp, getApps, type FirebaseApp } from 'firebase/app';
-import { getAuth, type Auth } from 'firebase/auth';
+import { getAuth, type Auth, GoogleAuthProvider } from 'firebase/auth'; // Added GoogleAuthProvider
 import { getFirestore, type Firestore } from 'firebase/firestore'; // Enabled Firestore
 // import { getStorage, type FirebaseStorage } from 'firebase/storage';
 // import { getAnalytics, type Analytics } from "firebase/analytics";
@@ -30,9 +30,12 @@ if (getApps().length === 0) {
 
 auth = getAuth(app);
 firestore = getFirestore(app); // Initialized Firestore
+const googleProvider = new GoogleAuthProvider(); // Added GoogleAuthProvider instance
+
 // storage = getStorage(app);
 // if (typeof window !== 'undefined') {
 //   analytics = getAnalytics(app);
 // }
 
-export { app, auth, firestore /*, storage, analytics */ }; // Exported Firestore
+export { app, auth, firestore, googleProvider /*, storage, analytics */ }; // Exported Firestore and googleProvider
+
