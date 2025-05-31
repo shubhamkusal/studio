@@ -13,12 +13,17 @@ export interface UserProfile {
   updatedAt: Timestamp;
 }
 
+export interface OrganizationOwner {
+  uid: string;
+  email: string | null;
+}
+
 export interface Organization {
   id?: string; // Document ID, set by Firestore
   name: string;
   description?: string;
   industry?: string;
-  ownerUid: string;
+  owner: OrganizationOwner; // Updated from ownerUid
   orgCode: string;
   members: string[]; // Array of user UIDs
   createdAt: Timestamp;

@@ -14,17 +14,17 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Building, UserPlus, Users, BadgeHelp } from 'lucide-react';
-import { firestore, auth } from '@/lib/firebase';
-import { doc, setDoc, getDoc, getDocs, query, where, updateDoc, arrayUnion, serverTimestamp, Timestamp, collection, writeBatch } from 'firebase/firestore';
+import { Loader2, Building, Users, BadgeHelp } from 'lucide-react';
+import { firestore } from '@/lib/firebase'; // auth is not directly used here for user object
+import { doc, collection, writeBatch, query, where, getDocs, arrayUnion, serverTimestamp, Timestamp } from 'firebase/firestore';
 import type { User as FirebaseUser } from 'firebase/auth';
-import { industries, type Industry, type Organization, type UserProfile } from '@/types/firestore';
-import { useRouter } from 'next/navigation'; // For potential redirect after onboarding
+import { industries, type Industry, type Organization, type OrganizationOwner } from '@/types/firestore';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-provider';
 
 
 interface OnboardingModalProps {
-  user: FirebaseUser;
+  user: FirebaseUser; // FirebaseUser from firebase/auth
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }
@@ -71,14 +71,17 @@ export default function OnboardingModal({ user, isOpen, setIsOpen }: OnboardingM
   const handleCreateOrganization: SubmitHandler<CreateOrgInputs> = async (data) => {
     setIsSubmitting(true);
     const newOrgCode = generateOrgCode();
-    // TODO: Add check for orgCode uniqueness, though highly unlikely to collide initially.
-    // For a production app, this check would involve querying Firestore before writing.
+    
+    const ownerInfo: OrganizationOwner = {
+        uid: user.uid,
+        email: user.email,
+    };
 
     const newOrganization: Omit<Organization, 'id'> = {
       name: data.orgName,
       description: data.orgDescription || '',
       industry: data.orgIndustry,
-      ownerUid: user.uid,
+      owner: ownerInfo, // Updated to use owner object
       orgCode: newOrgCode,
       members: [user.uid],
       createdAt: serverTimestamp() as Timestamp,
@@ -93,7 +96,7 @@ export default function OnboardingModal({ user, isOpen, setIsOpen }: OnboardingM
       const userProfileRef = doc(firestore, 'users', user.uid);
       batch.update(userProfileRef, {
         organizationId: orgRef.id,
-        role: 'owner',
+        role: 'owner', // User creating the org is 'owner'
         onboardingComplete: true,
         updatedAt: serverTimestamp(),
       });
@@ -101,9 +104,9 @@ export default function OnboardingModal({ user, isOpen, setIsOpen }: OnboardingM
       await batch.commit();
 
       toast({ title: "Organization Created!", description: `${data.orgName} has been successfully created.` });
-      await reloadUserProfile(); // Reload profile to reflect changes
+      await reloadUserProfile();
       setIsOpen(false);
-      router.push('/dashboard'); // Or to a specific org dashboard
+      router.push('/dashboard');
     } catch (error) {
       console.error("Error creating organization:", error);
       toast({ title: "Error", description: "Failed to create organization. Please try again.", variant: "destructive" });
@@ -140,7 +143,7 @@ export default function OnboardingModal({ user, isOpen, setIsOpen }: OnboardingM
         const userProfileRef = doc(firestore, 'users', user.uid);
         batch.update(userProfileRef, {
           organizationId: orgDoc.id,
-          role: 'member',
+          role: 'member', // User joining an org is 'member'
           onboardingComplete: true,
           updatedAt: serverTimestamp(),
         });
@@ -168,7 +171,7 @@ export default function OnboardingModal({ user, isOpen, setIsOpen }: OnboardingM
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) setIsOpen(false); /* Allow closing by escape/overlay */ }}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) setIsOpen(false); }}>
       <DialogContent className="sm:max-w-md md:max-w-lg bg-card">
         <DialogHeader>
           <DialogTitle className="font-headline text-2xl text-center">
