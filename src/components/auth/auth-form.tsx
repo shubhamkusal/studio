@@ -4,8 +4,8 @@
 
 import { useState, type FormEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, type AuthError } from 'firebase/auth';
-import { auth, googleProvider } from '@/lib/firebase'; // Imported googleProvider
+import { signInWithEmailAndPassword, signInWithPopup, type AuthError } from 'firebase/auth';
+import { auth, googleProvider } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,7 +18,6 @@ interface AuthFormProps {
   mode: 'signin' | 'signup';
 }
 
-// Simple Google Icon SVG
 const GoogleIcon = () => (
   <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
     <path
@@ -46,8 +45,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // const [isApiKeyPotentiallyInvalid, setIsApiKeyPotentiallyInvalid] = useState(false); // Removed
-  // const [apiKeyErrorMessage, setApiKeyErrorMessage] = useState<string | null>(null); // Removed
+  const [isApiKeyPotentiallyInvalid, setIsApiKeyPotentiallyInvalid] = useState(false);
+  const [apiKeyErrorMessage, setApiKeyErrorMessage] = useState<string | null>(null);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -56,37 +55,27 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const buttonText = mode === 'signin' ? 'Sign In' : 'Sign Up';
   const Icon = mode === 'signin' ? KeyRound : UserPlus;
 
-  // useEffect(() => { // Removed API key check block
-  //   const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-  //   if (!apiKey || apiKey.includes("YOUR_") || apiKey.includes("PASTE_") || apiKey.includes("XXXXX") || apiKey.length < 20) {
-  //     setIsApiKeyPotentiallyInvalid(true);
-  //     setApiKeyErrorMessage("CRITICAL CONFIGURATION ISSUE: Your Firebase API Key (NEXT_PUBLIC_FIREBASE_API_KEY) appears to be missing, a placeholder, or invalid. Please check your application's .env file (and restart your server) or your hosting provider's environment variable settings. Authentication will not work until this is fixed.");
-  //   }
-  // }, []);
+  useEffect(() => {
+    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    if (!apiKey || apiKey.includes("YOUR_") || apiKey.includes("PASTE_") || apiKey.includes("XXXXX") || apiKey.length < 20) {
+      setIsApiKeyPotentiallyInvalid(true);
+      setApiKeyErrorMessage("CRITICAL CONFIGURATION ISSUE: Your Firebase API Key (NEXT_PUBLIC_FIREBASE_API_KEY) appears to be missing, a placeholder, or invalid. Please check your application's .env file (and restart your server if developing locally) or your hosting provider's environment variable settings (and redeploy if hosted). Authentication WILL NOT WORK until this is fixed.");
+    }
+  }, []);
 
 
   const handleEmailPasswordSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    // if (isApiKeyPotentiallyInvalid) return; // Removed
+    if (isApiKeyPotentiallyInvalid) {
+        toast({ title: "Configuration Issue", description: apiKeyErrorMessage, variant: "destructive", duration: 10000 });
+        return;
+    }
 
     setIsLoading(true);
     setError(null);
 
     try {
       if (mode === 'signup') {
-        // This component should not handle password-based signup anymore,
-        // as that's delegated to the /signup and /finish-signup flow.
-        // However, keeping it for 'signin' mode.
-        // For direct email/password signup (if re-enabled here):
-        // await createUserWithEmailAndPassword(auth, email, password);
-        // toast({
-        //   title: 'Account Created!',
-        //   description: 'You have successfully signed up. Redirecting to dashboard...',
-        // });
-        // router.push('/dashboard'); 
-        // This part for signup in AuthForm is effectively deprecated by the new email link flow.
-        // If 'signup' mode is passed to AuthForm, it might need adjustment or removal.
-        // For now, assuming AuthForm is primarily for 'signin'.
          setError("Password-based sign-up is handled through the email verification flow. Please go to the Sign Up page.");
          toast({title: "Sign Up Method", description: "Please use the main Sign Up page for email registration.", variant: "default"});
          setIsLoading(false);
@@ -116,14 +105,14 @@ export default function AuthForm({ mode }: AuthFormProps) {
           case 'auth/wrong-password':
             errorMessage = 'Incorrect password. Please try again.';
             break;
-          case 'auth/email-already-in-use': // Should primarily occur in a direct password signup context
+          case 'auth/email-already-in-use':
             errorMessage = 'This email address is already in use.';
             break;
-          case 'auth/weak-password': // Should primarily occur in a direct password signup context
+          case 'auth/weak-password':
             errorMessage = 'Password is too weak. It should be at least 8 characters.';
             break;
           case 'auth/api-key-not-valid':
-             errorMessage = 'Firebase API Key is not valid. Please check your .env file (and restart your server) or your hosting provider configuration.';
+             errorMessage = 'Firebase API Key is not valid. CRITICAL: Check NEXT_PUBLIC_FIREBASE_API_KEY in .env file (restart server) or hosting provider config (redeploy).';
              break;
           default:
             errorMessage = authError.message || errorMessage;
@@ -135,14 +124,17 @@ export default function AuthForm({ mode }: AuthFormProps) {
         description: errorMessage,
         variant: 'destructive',
       });
-      console.error(authError);
+      console.error("AuthForm Firebase Error:", authError);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
-    // if (isApiKeyPotentiallyInvalid) return; // Removed
+    if (isApiKeyPotentiallyInvalid) {
+        toast({ title: "Configuration Issue", description: apiKeyErrorMessage, variant: "destructive", duration: 10000 });
+        return;
+    }
     
     setIsLoading(true);
     setError(null);
@@ -165,13 +157,13 @@ export default function AuthForm({ mode }: AuthFormProps) {
             errorMessage = 'An account already exists with the same email address but different sign-in credentials.';
             break;
            case 'auth/api-key-not-valid':
-             errorMessage = 'Firebase API Key is not valid. Please check your .env file (and restart your server) or your hosting provider configuration.';
+             errorMessage = 'Firebase API Key is not valid for Google Sign-In. CRITICAL: Check NEXT_PUBLIC_FIREBASE_API_KEY in .env file (restart server) or hosting provider config (redeploy).';
              break;
           default:
             errorMessage = authError.message || errorMessage;
         }
       }
-      setError(errorMessage);
+      setError(errorMessage); // Also set general error for UI display if needed
       toast({
         title: 'Google Sign In Failed',
         description: errorMessage,
@@ -195,14 +187,14 @@ export default function AuthForm({ mode }: AuthFormProps) {
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
-          {/* {isApiKeyPotentiallyInvalid && apiKeyErrorMessage && ( // Removed API key warning display
-            <div className="mb-6 p-3 rounded-md bg-destructive/10 border border-destructive text-destructive text-sm">
+          {isApiKeyPotentiallyInvalid && apiKeyErrorMessage && (
+            <div className="mb-6 p-3 rounded-md bg-destructive/10 border border-destructive/50 text-destructive text-sm">
               <div className="flex items-start">
                 <AlertTriangle className="h-5 w-5 mr-2 shrink-0 mt-0.5" />
                 <p>{apiKeyErrorMessage}</p>
               </div>
             </div>
-          )} */}
+          )}
           <form onSubmit={handleEmailPasswordSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email">Email Address</Label>
@@ -214,7 +206,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
                 placeholder="you@example.com"
                 required
                 className="bg-secondary/30 border-border/70"
-                disabled={isLoading /*|| isApiKeyPotentiallyInvalid*/} // Removed isApiKeyPotentiallyInvalid
+                disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
@@ -227,11 +219,11 @@ export default function AuthForm({ mode }: AuthFormProps) {
                 placeholder="••••••••"
                 required
                 className="bg-secondary/30 border-border/70"
-                disabled={isLoading /*|| isApiKeyPotentiallyInvalid*/} // Removed isApiKeyPotentiallyInvalid
+                disabled={isLoading}
               />
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading /*|| isApiKeyPotentiallyInvalid*/}>
+            <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Icon className="mr-2 h-4 w-4" /> }
               {buttonText}
             </Button>
@@ -252,10 +244,10 @@ export default function AuthForm({ mode }: AuthFormProps) {
             type="button"
             variant="outline"
             onClick={handleGoogleSignIn}
-            disabled={isLoading /*|| isApiKeyPotentiallyInvalid*/} // Removed isApiKeyPotentiallyInvalid
+            disabled={isLoading}
             className="w-full hover:bg-secondary/50 border-border/70"
           >
-            {isLoading && email === '' && password === '' /*&& !isApiKeyPotentiallyInvalid*/ ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon /> }
+            {isLoading && email === '' && password === '' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon /> }
             Sign {mode === 'signin' ? 'in' : 'up'} with Google
           </Button>
 

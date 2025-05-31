@@ -34,9 +34,6 @@ export default function FinishSignUpPage() {
         setIsLoading(true);
         let storedEmail = window.localStorage.getItem('emailForSignIn');
         if (!storedEmail) {
-          // Fallback if email is not in localStorage (e.g., user opened link on different device)
-          // A more robust solution might involve a separate step or asking the user for their email again.
-          // For simplicity here, we'll try to get it from the user if missing, but this is not ideal.
           storedEmail = window.prompt('Please provide your email address to complete sign-up:');
           if (storedEmail) window.localStorage.setItem('emailForSignIn', storedEmail);
         }
@@ -51,17 +48,8 @@ export default function FinishSignUpPage() {
 
         try {
           const userCredential = await signInWithEmailLink(auth, storedEmail, window.location.href);
-          // Important: Clear the email from localStorage after successful sign-in
           window.localStorage.removeItem('emailForSignIn');
           
-          // User is signed in. Now check if it's a new user.
-          // Firebase doesn't directly expose `additionalUserInfo.isNewUser` via `signInWithEmailLink` in the same way as popup/redirect.
-          // The most reliable way is to check if their profile exists or if they need to set a password.
-          // For this flow, we assume if they land here, they need to set a password for a new account.
-          // A more robust check could involve checking Firestore for an existing user profile
-          // or checking if the user has a password hash (not directly possible client-side).
-          
-          // For this specific flow, we proceed to password setting.
           setFirebaseUser(userCredential.user);
           setIsLinkVerified(true);
           toast({ title: 'Email Verified!', description: 'Please set your password to complete registration.' });
@@ -74,7 +62,7 @@ export default function FinishSignUpPage() {
           } else if (authError.code === 'auth/user-disabled') {
             errorMessage = 'This account has been disabled.';
           } else if (authError.code === 'auth/api-key-not-valid'){
-            errorMessage = 'Firebase API Key is not valid. Please check your NEXT_PUBLIC_FIREBASE_API_KEY environment variable and restart your server.';
+            errorMessage = 'Firebase API Key is not valid. CRITICAL: Check NEXT_PUBLIC_FIREBASE_API_KEY in .env file (restart server) or hosting provider config (redeploy).';
           }
           setError(errorMessage);
           toast({ title: 'Sign Up Link Error', description: errorMessage, variant: 'destructive' });
@@ -83,14 +71,12 @@ export default function FinishSignUpPage() {
           setIsLoading(false);
         }
       } else {
-        // This means the URL doesn't contain a valid sign-in link or it's already been used.
         setError('This page is for completing email sign-up. If you received a link, please use it. Otherwise, start the sign-up process.');
-        // Optionally redirect or show minimal UI if the link is not valid
       }
     };
 
     processEmailLink();
-  }, [toast]); // router and toast are stable, auth is global
+  }, [toast]);
 
   const handleSetPassword = async (event: FormEvent) => {
     event.preventDefault();
@@ -100,7 +86,7 @@ export default function FinishSignUpPage() {
       setError('Passwords do not match.');
       return;
     }
-    if (password.length < 8) { // Password policy
+    if (password.length < 8) {
       setError('Password must be at least 8 characters long.');
       return;
     }
@@ -112,25 +98,21 @@ export default function FinishSignUpPage() {
 
     setIsLoading(true);
     try {
-      // User is already signed in via email link, now update their password
       await updatePassword(firebaseUser, password);
       setIsPasswordSet(true);
-      // The AuthProvider will create the Firestore profile if it doesn't exist
-      // upon detecting a new Firebase Auth user.
-      // We just need to ensure the onboardingComplete flag is handled.
-      // reloadUserProfile will fetch/create the profile.
       await reloadUserProfile(); 
       toast({
         title: 'Password Set Successfully!',
         description: 'Your account is ready. Redirecting...',
       });
-      // Redirect to dashboard, where onboarding modal will trigger if onboardingComplete is false
       router.push('/dashboard'); 
     } catch (e) {
       const authError = e as AuthError;
       let errorMessage = 'Failed to set password. Please try again.';
       if (authError.code === 'auth/weak-password') {
         errorMessage = 'Password is too weak. Please choose a stronger password (at least 8 characters).';
+      } else if (authError.code === 'auth/api-key-not-valid') {
+        errorMessage = 'Firebase API Key is not valid for this operation. CRITICAL: Check NEXT_PUBLIC_FIREBASE_API_KEY in .env file (restart server) or hosting provider config (redeploy).';
       }
       setError(errorMessage);
       toast({ title: 'Password Error', description: errorMessage, variant: 'destructive' });
@@ -140,7 +122,6 @@ export default function FinishSignUpPage() {
     }
   };
   
-  // Loading state while verifying the link
   if (isLoading && !isLinkVerified && !isPasswordSet) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
@@ -150,7 +131,6 @@ export default function FinishSignUpPage() {
     );
   }
 
-  // If link verification failed and there's an error message
   if (!isLinkVerified && error) {
      return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-background to-secondary/30 p-4 text-center">
@@ -164,8 +144,6 @@ export default function FinishSignUpPage() {
     );
   }
 
-
-  // Main content: show password form if link is verified and password not yet set
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background to-secondary/30 p-4">
       <Card className="w-full max-w-md shadow-xl border-border/50">
@@ -215,7 +193,7 @@ export default function FinishSignUpPage() {
             </CardContent>
           </>
         )}
-        {isPasswordSet && ( // If password has been successfully set
+        {isPasswordSet && (
             <CardContent className="text-center p-8">
                  <ShieldCheck className="h-16 w-16 text-green-500 mx-auto mb-4" />
                 <CardTitle className="font-headline text-2xl mb-2">Account Ready!</CardTitle>
@@ -223,7 +201,7 @@ export default function FinishSignUpPage() {
                 <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
             </CardContent>
         )}
-         {!isLinkVerified && !error && !isLoading && ( // Fallback if not verifying, no error, not loading - e.g. direct navigation
+         {!isLinkVerified && !error && !isLoading && (
            <CardContent className="text-center p-8">
              <CardTitle className="font-headline text-2xl mb-2">Invalid Access</CardTitle>
              <CardDescription className="mb-4">

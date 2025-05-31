@@ -2,7 +2,7 @@
 // src/app/(auth)/signup/page.tsx
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { sendSignInLinkToEmail, signInWithPopup, type AuthError } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
@@ -28,19 +28,34 @@ const GoogleIcon = () => (
 export default function SignUpPage() {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null); // General error state for email sign-up
+  const [error, setError] = useState<string | null>(null);
   const [isEmailSent, setIsEmailSent] = useState(false);
+  const [isApiKeyPotentiallyInvalid, setIsApiKeyPotentiallyInvalid] = useState(false);
+  const [apiKeyErrorMessage, setApiKeyErrorMessage] = useState<string | null>(null);
   const router = useRouter();
   const { toast } = useToast();
-  const { reloadUserProfile } = useAuth(); // For Google Sign In
+  const { reloadUserProfile } = useAuth();
+
+  useEffect(() => {
+    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    if (!apiKey || apiKey.includes("YOUR_") || apiKey.includes("PASTE_") || apiKey.includes("XXXXX") || apiKey.length < 20) {
+      setIsApiKeyPotentiallyInvalid(true);
+      setApiKeyErrorMessage("CRITICAL CONFIGURATION ISSUE: Your Firebase API Key (NEXT_PUBLIC_FIREBASE_API_KEY) appears to be missing, a placeholder, or invalid. Please check your application's .env file (and restart your server if developing locally) or your hosting provider's environment variable settings (and redeploy if hosted). Authentication WILL NOT WORK until this is fixed.");
+    }
+  }, []);
 
   const handleEmailSignUp = async (event: FormEvent) => {
     event.preventDefault();
+    if (isApiKeyPotentiallyInvalid) {
+        toast({ title: "Configuration Issue", description: apiKeyErrorMessage, variant: "destructive", duration: 10000 });
+        setError(apiKeyErrorMessage);
+        return;
+    }
     setIsLoading(true);
     setError(null);
 
     const actionCodeSettings = {
-      url: `${window.location.origin}/finish-signup`, // Redirect to finish sign-up page
+      url: `${window.location.origin}/finish-signup`,
       handleCodeInApp: true,
     };
 
@@ -63,7 +78,7 @@ export default function SignUpPage() {
         errorMessage = 'This email is already associated with an account. Please sign in instead.';
         setTimeout(() => router.push('/signin'), 3000);
       }
-      setError(errorMessage); // Set error for display below the email input
+      setError(errorMessage);
       toast({
         title: 'Sign Up Failed',
         description: errorMessage,
@@ -76,16 +91,21 @@ export default function SignUpPage() {
   };
 
   const handleGoogleSignIn = async () => {
+    if (isApiKeyPotentiallyInvalid) {
+        toast({ title: "Configuration Issue", description: apiKeyErrorMessage, variant: "destructive", duration: 10000 });
+        // setError(apiKeyErrorMessage); // Not setting general error here as Google flow is separate
+        return;
+    }
     setIsLoading(true);
-    setError(null); // Clear email sign-up error
+    setError(null);
     try {
       await signInWithPopup(auth, googleProvider);
-      await reloadUserProfile(); // Ensure profile is created/loaded
+      await reloadUserProfile();
       toast({
         title: 'Signed In with Google!',
         description: 'Redirecting...',
       });
-      router.push('/dashboard'); // Onboarding modal will trigger there if needed
+      router.push('/dashboard');
     } catch (e) {
       const authError = e as AuthError;
       let errorMessage = 'Could not sign in with Google. Please try again.';
@@ -104,7 +124,6 @@ export default function SignUpPage() {
             errorMessage = authError.message || errorMessage;
         }
       }
-      //setError(errorMessage); // This error state is for the email form, Google uses toast
       toast({
         title: 'Google Sign In Failed',
         description: errorMessage,
@@ -127,6 +146,14 @@ export default function SignUpPage() {
           <CardDescription>Join TRACKERLY today. Start by entering your email or using Google.</CardDescription>
         </CardHeader>
         <CardContent>
+          {isApiKeyPotentiallyInvalid && apiKeyErrorMessage && !isEmailSent && (
+            <div className="mb-6 p-3 rounded-md bg-destructive/10 border border-destructive/50 text-destructive text-sm">
+              <div className="flex items-start">
+                <AlertTriangle className="h-5 w-5 mr-2 shrink-0 mt-0.5" />
+                <p>{apiKeyErrorMessage}</p>
+              </div>
+            </div>
+          )}
           {isEmailSent ? (
             <div className="text-center p-4 bg-primary/10 rounded-md">
               <Mail className="h-10 w-10 text-primary mx-auto mb-3" />
@@ -205,4 +232,3 @@ export default function SignUpPage() {
     </div>
   );
 }
-
