@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail, AlertTriangle, UserPlus } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth } from '@/context/auth-provider';
 
 const GoogleIcon = () => (
   <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
@@ -27,10 +28,11 @@ const GoogleIcon = () => (
 export default function SignUpPage() {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null); // General error state
   const [isEmailSent, setIsEmailSent] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { reloadUserProfile } = useAuth(); // For Google Sign In
 
   const handleEmailSignUp = async (event: FormEvent) => {
     event.preventDefault();
@@ -38,13 +40,13 @@ export default function SignUpPage() {
     setError(null);
 
     const actionCodeSettings = {
-      url: `${window.location.origin}/finish-signup`,
+      url: `${window.location.origin}/finish-signup`, // Redirect to finish sign-up page
       handleCodeInApp: true,
     };
 
     try {
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-      window.localStorage.setItem('emailForSignIn', email); // Store email for /finish-signup
+      window.localStorage.setItem('emailForSignIn', email); 
       setIsEmailSent(true);
       toast({
         title: 'Verification Email Sent',
@@ -57,6 +59,10 @@ export default function SignUpPage() {
         errorMessage = 'Invalid email address format.';
       } else if (authError.code === 'auth/api-key-not-valid') {
         errorMessage = 'Firebase API Key is not valid. Please check your NEXT_PUBLIC_FIREBASE_API_KEY environment variable and restart your server.';
+      } else if (authError.code === 'auth/user-already-exists' || authError.code === 'auth/email-already-in-use') {
+        errorMessage = 'This email is already associated with an account. Please sign in instead.';
+        // Option to redirect or offer sign-in link
+        setTimeout(() => router.push('/signin'), 3000);
       }
       setError(errorMessage);
       toast({
@@ -75,6 +81,7 @@ export default function SignUpPage() {
     setError(null);
     try {
       await signInWithPopup(auth, googleProvider);
+      await reloadUserProfile(); // Ensure profile is created/loaded
       toast({
         title: 'Signed In with Google!',
         description: 'Redirecting...',
@@ -83,13 +90,13 @@ export default function SignUpPage() {
     } catch (e) {
       const authError = e as AuthError;
       let errorMessage = 'Could not sign in with Google. Please try again.';
-      if (authError.code) {
+       if (authError.code) {
         switch (authError.code) {
           case 'auth/popup-closed-by-user':
             errorMessage = 'Sign-in popup closed before completion.';
             break;
           case 'auth/account-exists-with-different-credential':
-            errorMessage = 'An account already exists with this email using a different sign-in method.';
+            errorMessage = 'An account already exists with this email using a different sign-in method. Please sign in using that method.';
             break;
           case 'auth/api-key-not-valid':
              errorMessage = 'Firebase API Key is not valid. Please check your NEXT_PUBLIC_FIREBASE_API_KEY environment variable and restart your server.';
