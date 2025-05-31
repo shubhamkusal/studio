@@ -22,15 +22,15 @@ const productLinks = [
 
 const companyLinks = [
   { name: 'About Us', href: '#company' },
-  { name: 'Careers', href: '#' },
-  { name: 'Blog', href: '#' },
-  { name: 'Contact Us', href: 'mailto:support@trackerly.com' },
+  { name: 'Careers', href: '#' }, // Stays as # for now
+  { name: 'Blog', href: '#' }, // Stays as # for now
+  { name: 'Contact Us', href: '/contact' }, // Updated to point to contact page
 ];
 
 const legalLinks = [
-  { name: 'Privacy Policy', href: '#' },
-  { name: 'Terms of Service', href: '#' },
-  { name: 'Cookie Policy', href: '#' },
+  { name: 'Privacy Policy', href: '/privacy-policy' },
+  { name: 'Terms of Service', href: '/terms-of-service' },
+  { name: 'Cookie Policy', href: '/cookie-policy' },
 ];
 
 export default function Footer() {
