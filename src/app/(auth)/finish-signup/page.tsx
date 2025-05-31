@@ -64,7 +64,7 @@ export default function FinishSignUpPage() {
           } else if (authError.code === 'auth/user-disabled') {
             errorMessage = 'This account has been disabled.';
           } else if (authError.code === 'auth/api-key-not-valid'){
-            errorMessage = 'Firebase API Key is not valid. Please check your configuration.';
+            errorMessage = 'Firebase API Key is not valid. Please check your NEXT_PUBLIC_FIREBASE_API_KEY environment variable and restart your server.';
           }
           setError(errorMessage);
           toast({ title: 'Sign Up Link Error', description: errorMessage, variant: 'destructive' });
@@ -88,7 +88,7 @@ export default function FinishSignUpPage() {
       setError('Passwords do not match.');
       return;
     }
-    if (password.length < 8) { // Enforcing 8+ characters as per prompt
+    if (password.length < 8) { 
       setError('Password must be at least 8 characters long.');
       return;
     }
@@ -102,12 +102,12 @@ export default function FinishSignUpPage() {
     try {
       await updatePassword(firebaseUser, password);
       setIsPasswordSet(true);
-      await reloadUserProfile(); // Ensure profile is up-to-date before dashboard/onboarding
+      await reloadUserProfile(); 
       toast({
         title: 'Password Set Successfully!',
         description: 'Your account is ready. Redirecting...',
       });
-      router.push('/dashboard'); // Onboarding modal will trigger there if needed
+      router.push('/dashboard'); 
     } catch (e) {
       const authError = e as AuthError;
       let errorMessage = 'Failed to set password. Please try again.';
@@ -122,7 +122,6 @@ export default function FinishSignUpPage() {
     }
   };
   
-  // UI States
   if (isLoading && !isLinkVerified && !isPasswordSet) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
