@@ -8,23 +8,23 @@ const socialLinks = [
   { name: 'Twitter', icon: Twitter, href: '#' },
   { name: 'LinkedIn', icon: Linkedin, href: '#' },
   { name: 'Instagram', icon: Instagram, href: '#' },
-  { name: 'GitHub', icon: Github, href: '#' }, // Added GitHub
+  { name: 'GitHub', icon: Github, href: '#' },
 ];
 
 const productLinks = [
-  { name: 'Smart Clock-In', href: '#core-features' },
-  { name: 'Time Tracking', href: '#core-features' },
-  { name: 'AI Operations', href: '#core-features' },
-  { name: 'Voice Channels', href: '#core-features' },
-  { name: 'Analytics', href: '#core-features' },
-  { name: 'Pricing', href: '#pricing' },
+  { name: 'Smart Clock-In', href: '/#core-features' },
+  { name: 'Time Tracking', href: '/#core-features' },
+  { name: 'AI Operations', href: '/#core-features' },
+  { name: 'Voice Channels', href: '/#core-features' },
+  { name: 'Analytics', href: '/#core-features' },
+  { name: 'Pricing', href: '/#pricing' },
 ];
 
 const companyLinks = [
-  { name: 'About Us', href: '#company' },
-  { name: 'Careers', href: '#' }, // Stays as # for now
-  { name: 'Blog', href: '#' }, // Stays as # for now
-  { name: 'Contact Us', href: '/contact' }, // Updated to point to contact page
+  { name: 'About Us', href: '/#company' },
+  { name: 'Careers', href: '/careers' },
+  { name: 'Blog', href: '/blog' },
+  { name: 'Contact Us', href: '/contact' },
 ];
 
 const legalLinks = [
