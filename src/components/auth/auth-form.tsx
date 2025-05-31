@@ -99,7 +99,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             errorMessage = 'Password is too weak. It should be at least 6 characters.';
             break;
           case 'auth/api-key-not-valid':
-             errorMessage = 'Firebase API Key is not valid. Please check your configuration.';
+             errorMessage = 'Firebase API Key is not valid. Please check your .env file or hosting provider configuration.';
              break;
           default:
             errorMessage = authError.message || errorMessage;
@@ -139,7 +139,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             errorMessage = 'An account already exists with the same email address but different sign-in credentials.';
             break;
            case 'auth/api-key-not-valid':
-             errorMessage = 'Firebase API Key is not valid. Please check your configuration.';
+             errorMessage = 'Firebase API Key is not valid. Please check your .env file or hosting provider configuration.';
              break;
           default:
             errorMessage = authError.message || errorMessage;
