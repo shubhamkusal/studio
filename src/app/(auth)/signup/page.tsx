@@ -32,21 +32,21 @@ export default function SignUpPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  // Client-side check for API key status
-  const [isApiKeyPotentiallyInvalid, setIsApiKeyPotentiallyInvalid] = useState(false);
-  const [apiKeyErrorMessage, setApiKeyErrorMessage] = useState<string | null>(null);
+  // Client-side check for API key status - REMOVED
+  // const [isApiKeyPotentiallyInvalid, setIsApiKeyPotentiallyInvalid] = useState(false);
+  // const [apiKeyErrorMessage, setApiKeyErrorMessage] = useState<string | null>(null);
 
-  useState(() => {
-    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-    if (!apiKey || apiKey.includes("YOUR_") || apiKey.includes("PASTE_") || apiKey.includes("XXXXX") || apiKey.length < 20) {
-      setIsApiKeyPotentiallyInvalid(true);
-      setApiKeyErrorMessage("CRITICAL CONFIGURATION ISSUE: Your Firebase API Key (NEXT_PUBLIC_FIREBASE_API_KEY) appears to be missing, a placeholder, or invalid. Please check your application's .env file (and restart your server) or your hosting provider's environment variable settings. Authentication will not work until this is fixed.");
-    }
-  });
+  // useState(() => { // REMOVED API key check block
+  //   const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+  //   if (!apiKey || apiKey.includes("YOUR_") || apiKey.includes("PASTE_") || apiKey.includes("XXXXX") || apiKey.length < 20) {
+  //     setIsApiKeyPotentiallyInvalid(true);
+  //     setApiKeyErrorMessage("CRITICAL CONFIGURATION ISSUE: Your Firebase API Key (NEXT_PUBLIC_FIREBASE_API_KEY) appears to be missing, a placeholder, or invalid. Please check your application's .env file (and restart your server) or your hosting provider's environment variable settings. Authentication will not work until this is fixed.");
+  //   }
+  // });
 
   const handleEmailSignUp = async (event: FormEvent) => {
     event.preventDefault();
-    if (isApiKeyPotentiallyInvalid) return;
+    // if (isApiKeyPotentiallyInvalid) return; // REMOVED
 
     setIsLoading(true);
     setError(null);
@@ -85,7 +85,7 @@ export default function SignUpPage() {
   };
 
   const handleGoogleSignIn = async () => {
-    if (isApiKeyPotentiallyInvalid) return;
+    // if (isApiKeyPotentiallyInvalid) return; // REMOVED
     
     setIsLoading(true);
     setError(null);
@@ -137,14 +137,14 @@ export default function SignUpPage() {
           <CardDescription>Join TRACKERLY today. Start by entering your email or using Google.</CardDescription>
         </CardHeader>
         <CardContent>
-          {isApiKeyPotentiallyInvalid && apiKeyErrorMessage && (
+          {/* {isApiKeyPotentiallyInvalid && apiKeyErrorMessage && ( // REMOVED API Key warning display
             <div className="mb-6 p-3 rounded-md bg-destructive/10 border border-destructive text-destructive text-sm">
               <div className="flex items-start">
                 <AlertTriangle className="h-5 w-5 mr-2 shrink-0 mt-0.5" />
                 <p>{apiKeyErrorMessage}</p>
               </div>
             </div>
-          )}
+          )} */}
 
           {isEmailSent ? (
             <div className="text-center p-4 bg-primary/10 rounded-md">
@@ -170,11 +170,11 @@ export default function SignUpPage() {
                   placeholder="you@example.com"
                   required
                   className="bg-secondary/30 border-border/70"
-                  disabled={isLoading || isApiKeyPotentiallyInvalid}
+                  disabled={isLoading /*|| isApiKeyPotentiallyInvalid*/} // REMOVED
                 />
               </div>
-              {error && !isApiKeyPotentiallyInvalid && <p className="text-sm text-destructive">{error}</p>}
-              <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading || isApiKeyPotentiallyInvalid}>
+              {error && <p className="text-sm text-destructive">{error}</p>}
+              <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading /*|| isApiKeyPotentiallyInvalid*/}>
                 {isLoading && !email.includes('@google') ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />}
                 Continue with Email
               </Button>
@@ -195,7 +195,7 @@ export default function SignUpPage() {
                 type="button"
                 variant="outline"
                 onClick={handleGoogleSignIn}
-                disabled={isLoading || isApiKeyPotentiallyInvalid}
+                disabled={isLoading /*|| isApiKeyPotentiallyInvalid*/} // REMOVED
                 className="w-full hover:bg-secondary/50 border-border/70"
               >
                 {isLoading && email.includes('@google') ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
