@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import AnimatedController from './animated-controller';
 import { useScrollFadeIn } from '@/hooks/use-scroll-fade-in';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 export default function HeroSection() {
   const sectionRef = useScrollFadeIn();
@@ -31,8 +32,9 @@ export default function HeroSection() {
         <Button 
           size="lg" 
           className="mt-6 px-8 py-3 text-lg bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-full transition-transform transform hover:scale-105"
+          asChild
         >
-          Get Started Free
+          <Link href="/signup">Get Started Free</Link>
         </Button>
       </motion.div>
     </section>

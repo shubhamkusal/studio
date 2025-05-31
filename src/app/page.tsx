@@ -10,6 +10,7 @@ import AnomalyDetectionCard from '@/components/landing/anomaly-detection-card';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
+import Link from 'next/link';
 
 const pricingPlans = [
   {

@@ -142,6 +142,7 @@ body {
     @apply bg-background text-foreground;
     background-image: linear-gradient(to bottom right, hsl(var(--gradient-from)), hsl(var(--gradient-to)));
     min-height: 100vh;
+    font-family: 'Inter', sans-serif;
     /* Body specific transitions for background properties */
     transition-property: background-color, color, background-image; /* Added background-image for gradient transition */
     transition-duration: 300ms; 
