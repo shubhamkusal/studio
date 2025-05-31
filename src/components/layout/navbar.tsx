@@ -16,11 +16,11 @@ import { useRouter } from 'next/navigation';
 
 
 const navItems = [
-  { label: 'Solutions', href: '#solutions' },
-  { label: 'How It Works', href: '#how-it-works' },
-  { label: 'Pricing', href: '#pricing' },
-  { label: 'Company', href: '#company' },
-  { label: 'Contact', href: '/contact'} // Updated href
+  { label: 'Solutions', href: '/#solutions' },
+  { label: 'How It Works', href: '/#how-it-works' },
+  { label: 'Pricing', href: '/#pricing' },
+  { label: 'Company', href: '/#company' },
+  { label: 'Contact', href: '/contact'}
 ];
 
 export default function Navbar() {
