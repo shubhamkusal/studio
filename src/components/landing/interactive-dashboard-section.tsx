@@ -28,12 +28,12 @@ export default function InteractiveDashboardSection() {
 
         <div className="relative rounded-lg shadow-2xl overflow-hidden border border-border p-2 bg-card">
           <Image
-            src="https://placehold.co/1200x750.png?text=TRACKERLY+Dashboard+Mockup"
+            src="https://placehold.co/1200x750.png?text=TRACKERLY%20Dashboard%0A%0AWelcome,%20User!%0A%0A%5BActivity%20Chart%5D%20%20%5BTask%20List%5D%0A%0A%5BTeam%20Stats%5D%20%20%5BRecent%20Alerts%5D"
             alt="TRACKERLY Dashboard Mockup"
             width={1200}
             height={750}
             className="rounded-md"
-            data-ai-hint="dashboard user interface"
+            data-ai-hint="dashboard interface analytics"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent flex flex-col items-center justify-end p-8 opacity-0 hover:opacity-100 transition-opacity duration-300">
              <Button 
