@@ -26,7 +26,9 @@ export default function ApiKeyWarningBanner() {
     if (problematic) {
       setApiKeyStatus(statusMessage);
       setIsVisible(true);
-      console.error(`🔴🔴🔴 CONFIGURATION ERROR: ${statusMessage} Please check your .env file or hosting provider's environment variable settings. Firebase services will not work correctly. 🔴🔴🔴`);
+      // console.error(`🔴🔴🔴 CONFIGURATION ERROR: ${statusMessage} Please check your .env file or hosting provider's environment variable settings. Firebase services will not work correctly. 🔴🔴🔴`);
+      // The console.error above was removed as it was being picked up by Next.js error overlay.
+      // The visual banner itself serves as the primary warning.
     }
   }, []);
 
