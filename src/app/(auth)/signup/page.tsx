@@ -28,7 +28,7 @@ const GoogleIcon = () => (
 export default function SignUpPage() {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null); // General error state
+  const [error, setError] = useState<string | null>(null); // General error state for email sign-up
   const [isEmailSent, setIsEmailSent] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -58,13 +58,12 @@ export default function SignUpPage() {
       if (authError.code === 'auth/invalid-email') {
         errorMessage = 'Invalid email address format.';
       } else if (authError.code === 'auth/api-key-not-valid') {
-        errorMessage = 'Firebase API Key is not valid. Please check your NEXT_PUBLIC_FIREBASE_API_KEY environment variable and restart your server.';
+        errorMessage = 'CRITICAL: Firebase API Key is not valid. Please check your NEXT_PUBLIC_FIREBASE_API_KEY in your .env file (and restart your server if local) or your hosting provider\'s environment variable settings (and redeploy if hosted). Authentication cannot proceed.';
       } else if (authError.code === 'auth/user-already-exists' || authError.code === 'auth/email-already-in-use') {
         errorMessage = 'This email is already associated with an account. Please sign in instead.';
-        // Option to redirect or offer sign-in link
         setTimeout(() => router.push('/signin'), 3000);
       }
-      setError(errorMessage);
+      setError(errorMessage); // Set error for display below the email input
       toast({
         title: 'Sign Up Failed',
         description: errorMessage,
@@ -78,7 +77,7 @@ export default function SignUpPage() {
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
-    setError(null);
+    setError(null); // Clear email sign-up error
     try {
       await signInWithPopup(auth, googleProvider);
       await reloadUserProfile(); // Ensure profile is created/loaded
@@ -99,13 +98,13 @@ export default function SignUpPage() {
             errorMessage = 'An account already exists with this email using a different sign-in method. Please sign in using that method.';
             break;
           case 'auth/api-key-not-valid':
-             errorMessage = 'Firebase API Key is not valid. Please check your NEXT_PUBLIC_FIREBASE_API_KEY environment variable and restart your server.';
+             errorMessage = 'CRITICAL: Firebase API Key is not valid for Google Sign-In. Please check your NEXT_PUBLIC_FIREBASE_API_KEY in your .env file (and restart your server if local) or your hosting provider\'s environment variable settings (and redeploy if hosted).';
              break;
           default:
             errorMessage = authError.message || errorMessage;
         }
       }
-      setError(errorMessage);
+      //setError(errorMessage); // This error state is for the email form, Google uses toast
       toast({
         title: 'Google Sign In Failed',
         description: errorMessage,
@@ -141,7 +140,7 @@ export default function SignUpPage() {
               </Button>
             </div>
           ) : (
-            <form onSubmit={handleEmailSignUp} className="space-y-6">
+            <form onSubmit={handleEmailSignUp} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
                 <Input
@@ -155,7 +154,12 @@ export default function SignUpPage() {
                   disabled={isLoading}
                 />
               </div>
-              {error && <p className="text-sm text-destructive">{error}</p>}
+              {error && (
+                <div className="flex items-start p-3 rounded-md bg-destructive/10 border border-destructive/50 text-destructive text-sm">
+                  <AlertTriangle className="h-5 w-5 mr-2 shrink-0 mt-0.5" />
+                  <p>{error}</p>
+                </div>
+              )}
               <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
                 {isLoading && !email.includes('@google') ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />}
                 Continue with Email
@@ -201,3 +205,4 @@ export default function SignUpPage() {
     </div>
   );
 }
+
