@@ -1,12 +1,19 @@
+
 // src/components/layout/navbar.tsx
 'use client';
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import Logo from '@/components/icons/logo';
-import { Menu } from 'lucide-react';
+import { Menu, LogOut } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useState } from 'react';
+import { useAuth } from '@/context/auth-provider';
+import { auth } from '@/lib/firebase';
+import { signOut } from 'firebase/auth';
+import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
+
 
 const navItems = [
   { label: 'Solutions', href: '#solutions' },
@@ -18,6 +25,21 @@ const navItems = [
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      toast({ title: "Signed Out", description: "You have been successfully signed out." });
+      router.push('/'); // Redirect to home page after sign out
+    } catch (error) {
+      console.error("Error signing out: ", error);
+      toast({ title: "Sign Out Error", description: "Failed to sign out. Please try again.", variant: "destructive" });
+    }
+    setMobileMenuOpen(false);
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -36,12 +58,25 @@ export default function Navbar() {
               {item.label}
             </Link>
           ))}
-           <Button variant="ghost" asChild className="text-foreground/90 hover:text-foreground">
-            <Link href="/signin">Sign In</Link>
-          </Button>
-          <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 transition-opacity rounded-full px-4 py-1">
-            <Link href="/signup">Try for Free</Link>
-          </Button>
+          {user ? (
+            <>
+              <Button variant="ghost" asChild className="text-foreground/90 hover:text-foreground">
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+              <Button onClick={handleSignOut} variant="outline" size="sm" className="text-foreground/90 hover:text-foreground border-primary hover:border-primary/80">
+                <LogOut className="mr-2 h-4 w-4" /> Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" asChild className="text-foreground/90 hover:text-foreground">
+                <Link href="/signin">Sign In</Link>
+              </Button>
+              <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 transition-opacity rounded-full px-4 py-1">
+                <Link href="/signup">Try for Free</Link>
+              </Button>
+            </>
+          )}
         </nav>
 
         <div className="md:hidden">
@@ -67,12 +102,25 @@ export default function Navbar() {
                     {item.label}
                   </Link>
                 ))}
-                <Button variant="outline" asChild className="w-full mt-4" onClick={() => setMobileMenuOpen(false)}>
-                  <Link href="/signin">Sign In</Link>
-                </Button>
-                <Button asChild className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition-opacity rounded-full" onClick={() => setMobileMenuOpen(false)}>
-                   <Link href="/signup">Try for Free</Link>
-                </Button>
+                {user ? (
+                  <>
+                    <Button variant="outline" asChild className="w-full mt-4" onClick={() => {setMobileMenuOpen(false); router.push('/dashboard');}}>
+                      <Link href="/dashboard">Dashboard</Link>
+                    </Button>
+                    <Button onClick={handleSignOut} className="w-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                       <LogOut className="mr-2 h-4 w-4" /> Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="outline" asChild className="w-full mt-4" onClick={() => setMobileMenuOpen(false)}>
+                      <Link href="/signin">Sign In</Link>
+                    </Button>
+                    <Button asChild className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition-opacity rounded-full" onClick={() => setMobileMenuOpen(false)}>
+                      <Link href="/signup">Try for Free</Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </SheetContent>
           </Sheet>
