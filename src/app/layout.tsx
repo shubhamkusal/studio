@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from '@/context/theme-provider';
 import { AuthProvider } from '@/context/auth-provider';
 import ThemeSwitcher from '@/components/theme-switcher';
+import ApiKeyWarningBanner from '@/components/layout/api-key-warning-banner'; // Updated import
 
 export const metadata: Metadata = {
   title: 'TRACKERLY - Redefining Remote Work',
@@ -24,6 +25,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased bg-background text-foreground">
+        <ApiKeyWarningBanner /> {/* Using the imported client component */}
         <ThemeProvider>
           <AuthProvider>
             {children}
