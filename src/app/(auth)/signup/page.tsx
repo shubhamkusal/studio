@@ -4,14 +4,14 @@
 
 import { useState, type FormEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { sendSignInLinkToEmail, signInWithPopup, type AuthError } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, signInWithPopup, type AuthError } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Mail, AlertTriangle, UserPlus } from 'lucide-react';
+import { Loader2, Mail, AlertTriangle, UserPlus, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/context/auth-provider';
 
@@ -27,51 +27,71 @@ const GoogleIcon = () => (
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isEmailSent, setIsEmailSent] = useState(false);
+  const [isVerificationEmailSent, setIsVerificationEmailSent] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
   const { reloadUserProfile } = useAuth();
 
-  const handleEmailSignUp = async (event: FormEvent) => {
+  const handleEmailPasswordSignUp = async (event: FormEvent) => {
     event.preventDefault();
-    setIsLoading(true);
     setError(null);
 
-    const actionCodeSettings = {
-      url: `${window.location.origin}/finish-signup`,
-      handleCodeInApp: true,
-    };
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      return;
+    }
 
+    setIsLoading(true);
     try {
-      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-      window.localStorage.setItem('emailForSignIn', email); 
-      setIsEmailSent(true);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      const actionCodeSettings = {
+        url: `${window.location.origin}/handle-auth-action`, // Redirect to new handler page
+        handleCodeInApp: true,
+      };
+      await sendEmailVerification(userCredential.user, actionCodeSettings);
+      
+      setIsVerificationEmailSent(true);
       toast({
-        title: 'Verification Email Sent',
-        description: `A sign-up link has been sent to ${email}. Please check your inbox (and spam folder).`,
+        title: 'Verification Email Sent!',
+        description: 'We’ve sent a verification link to your email. Please check it to activate your account and then sign in.',
+        duration: 10000,
       });
+
     } catch (e) {
       const authError = e as AuthError;
-      let errorMessage = 'Failed to send sign-up link. Please try again.';
-      if (authError.code === 'auth/invalid-email') {
+      let errorMessage = 'Failed to create account. Please try again.';
+      if (authError.code === 'auth/email-already-in-use') {
+        errorMessage = 'This email is already registered. Please sign in or use a different email.';
+      } else if (authError.code === 'auth/invalid-email') {
         errorMessage = 'Invalid email address format.';
+      } else if (authError.code === 'auth/weak-password') {
+        errorMessage = 'Password is too weak. It should be at least 8 characters long.';
       } else if (authError.code === 'auth/api-key-not-valid') {
         errorMessage = 'CRITICAL: Firebase API Key is not valid. Please check your NEXT_PUBLIC_FIREBASE_API_KEY in your .env file (and restart your server if local) or your hosting provider\'s environment variable settings (and redeploy if hosted). Authentication cannot proceed.';
-        toast({
-          title: 'CRITICAL CONFIGURATION ERROR',
-          description: errorMessage,
-          variant: 'destructive',
-          duration: 15000,
-        });
+         toast({
+            title: 'CRITICAL CONFIGURATION ERROR',
+            description: "Firebase API Key (NEXT_PUBLIC_FIREBASE_API_KEY) is invalid for this operation. 1. Verify key in Firebase console. 2. Update .env (local) or hosting vars (deployed). 3. IMPORTANT: Restart local server or REDEPLOY application.",
+            variant: 'destructive',
+            duration: 15000,
+         });
       } else if (authError.code === 'auth/operation-not-allowed') {
-        errorMessage = "Email Link sign-in is not enabled for this Firebase project.";
+        errorMessage = "Email/Password sign-up or Email Verification is not enabled for this Firebase project.";
         toast({
-          title: 'Action Required: Enable Sign-in Method',
-          description: "Please enable 'Email link (passwordless sign-in)' in your Firebase console (Authentication > Sign-in method > Email/Password provider).",
-          variant: 'destructive',
-          duration: 15000,
+            title: 'Action Required: Enable Sign-in Method',
+            description: "Please enable 'Email/Password' as a sign-in provider and ensure email verification is allowed in your Firebase console (Authentication > Sign-in method).",
+            variant: 'destructive',
+            duration: 15000,
         });
       } else if (authError.code === 'auth/unauthorized-domain') {
         errorMessage = "This domain is not authorized for Firebase operations.";
@@ -81,9 +101,6 @@ export default function SignUpPage() {
           variant: 'destructive',
           duration: 15000,
         });
-      } else if (authError.code === 'auth/user-already-exists' || authError.code === 'auth/email-already-in-use') {
-        errorMessage = 'This email is already associated with an account. Please sign in instead.';
-        setTimeout(() => router.push('/signin'), 3000);
       } else {
          toast({
             title: 'Sign Up Failed',
@@ -92,7 +109,7 @@ export default function SignUpPage() {
          });
       }
       setError(errorMessage);
-      console.error('Email Sign Up Error:', authError);
+      console.error('Email/Password Sign Up Error:', authError);
     } finally {
       setIsLoading(false);
     }
@@ -151,7 +168,6 @@ export default function SignUpPage() {
             errorMessage = authError.message || errorMessage;
         }
       }
-      // Avoid double toast for certain errors as they have specific detailed toasts
       if(!['auth/api-key-not-valid', 'auth/operation-not-allowed', 'auth/unauthorized-domain'].includes(authError.code)){ 
         toast({
           title: 'Google Sign In Failed',
@@ -174,23 +190,23 @@ export default function SignUpPage() {
             <UserPlus className="h-12 w-12 text-primary" />
           </div>
           <CardTitle className="font-headline text-3xl">Create Your Account</CardTitle>
-          <CardDescription>Join TRACKERLY today. Start by entering your email or using Google.</CardDescription>
+          <CardDescription>Join TRACKERLY today. Start by entering your email and password or using Google.</CardDescription>
         </CardHeader>
         <CardContent>
-          {isEmailSent ? (
+          {isVerificationEmailSent ? (
             <div className="text-center p-4 bg-primary/10 rounded-md">
               <Mail className="h-10 w-10 text-primary mx-auto mb-3" />
-              <h3 className="text-lg font-semibold text-foreground">Check Your Email</h3>
+              <h3 className="text-lg font-semibold text-foreground">Check Your Email!</h3>
               <p className="text-muted-foreground text-sm">
-                We&apos;ve sent a secure sign-up link to <strong>{email}</strong>.
-                Click the link in the email to complete your registration and set your password.
+                We&apos;ve sent a verification link to <strong>{email}</strong>.
+                Please click the link in the email to activate your account, then you can sign in.
               </p>
-              <Button variant="link" onClick={() => setIsEmailSent(false)} className="mt-3 text-primary">
-                Use a different email?
+              <Button variant="link" onClick={() => setIsVerificationEmailSent(false)} className="mt-3 text-primary">
+                Use a different email or resend?
               </Button>
             </div>
           ) : (
-            <form onSubmit={handleEmailSignUp} className="space-y-4">
+            <form onSubmit={handleEmailPasswordSignUp} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
                 <Input
@@ -204,6 +220,56 @@ export default function SignUpPage() {
                   disabled={isLoading}
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                    <Input
+                        id="password"
+                        type={showPassword ? 'text' : 'password'}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Enter your password (min. 8 characters)"
+                        required
+                        className="bg-secondary/30 border-border/70 pr-10"
+                        disabled={isLoading}
+                    />
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-foreground"
+                        onClick={() => setShowPassword(!showPassword)}
+                        tabIndex={-1}
+                    >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                 <div className="relative">
+                    <Input
+                        id="confirmPassword"
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Confirm your password"
+                        required
+                        className="bg-secondary/30 border-border/70 pr-10"
+                        disabled={isLoading}
+                    />
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-foreground"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        tabIndex={-1}
+                    >
+                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                </div>
+              </div>
               {error && ( 
                 <div className="flex items-start p-3 rounded-md bg-destructive/10 border border-destructive/50 text-destructive text-sm">
                   <AlertTriangle className="h-5 w-5 mr-2 shrink-0 mt-0.5" />
@@ -211,13 +277,13 @@ export default function SignUpPage() {
                 </div>
               )}
               <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
-                {isLoading && !email.includes('@google') ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />}
-                Continue with Email
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}
+                Create Account & Send Verification
               </Button>
             </form>
           )}
 
-          {!isEmailSent && (
+          {!isVerificationEmailSent && (
             <>
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
@@ -234,7 +300,7 @@ export default function SignUpPage() {
                 disabled={isLoading}
                 className="w-full hover:bg-secondary/50 border-border/70"
               >
-                {isLoading && email.includes('@google') ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
                 Continue with Google
               </Button>
             </>

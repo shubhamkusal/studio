@@ -11,11 +11,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, KeyRound, UserPlus, AlertTriangle } from 'lucide-react';
+import { Loader2, KeyRound, UserPlus, AlertTriangle, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 
 interface AuthFormProps {
-  mode: 'signin' | 'signup';
+  mode: 'signin'; // Simplified for now as signup has its own page
 }
 
 const GoogleIcon = () => (
@@ -43,15 +43,16 @@ const GoogleIcon = () => (
 export default function AuthForm({ mode }: AuthFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { toast } = useToast();
 
-  const title = mode === 'signin' ? 'Welcome Back!' : 'Create Your Account';
-  const description = mode === 'signin' ? 'Sign in to access your dashboard.' : 'Join TRACKERLY today.';
-  const buttonText = mode === 'signin' ? 'Sign In' : 'Sign Up';
-  const Icon = mode === 'signin' ? KeyRound : UserPlus;
+  const title = 'Welcome Back!';
+  const description = 'Sign in to access your dashboard.';
+  const buttonText = 'Sign In';
+  const Icon = KeyRound;
 
 
   const handleEmailPasswordSubmit = async (event: FormEvent) => {
@@ -60,19 +61,27 @@ export default function AuthForm({ mode }: AuthFormProps) {
     setError(null);
 
     try {
-      if (mode === 'signup') {
-         setError("Password-based sign-up is handled through the email verification flow. Please go to the Sign Up page.");
-         toast({title: "Sign Up Method", description: "Please use the main Sign Up page for email registration.", variant: "default"});
-         setIsLoading(false);
-         return;
-      } else { // Sign In mode
-        await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      // Check if email is verified (optional, good practice for protecting routes)
+      if (!userCredential.user.emailVerified) {
         toast({
-          title: 'Signed In!',
-          description: 'Welcome back! Redirecting to dashboard...',
+          title: 'Email Not Verified',
+          description: 'Please verify your email address before signing in. Check your inbox for the verification link.',
+          variant: 'default',
+          duration: 7000,
         });
-        router.push('/dashboard');
+        // Optionally sign the user out if you strictly enforce verification before any access
+        // await signOut(auth); 
+        // setIsLoading(false);
+        // return;
       }
+
+      toast({
+        title: 'Signed In!',
+        description: 'Welcome back! Redirecting to dashboard...',
+      });
+      router.push('/dashboard');
+      
     } catch (e) {
       const authError = e as AuthError;
       let errorMessage = 'An unexpected error occurred. Please try again.';
@@ -85,16 +94,11 @@ export default function AuthForm({ mode }: AuthFormProps) {
             errorMessage = 'This user account has been disabled.';
             break;
           case 'auth/user-not-found':
-            errorMessage = 'No user found with this email.';
+          case 'auth/invalid-credential': // This can cover user-not-found and wrong-password
+            errorMessage = 'Invalid email or password. Please try again or reset your password.';
             break;
-          case 'auth/wrong-password':
+          case 'auth/wrong-password': // Kept for explicit handling if desired, but invalid-credential is often preferred
             errorMessage = 'Incorrect password. Please try again.';
-            break;
-          case 'auth/email-already-in-use':
-            errorMessage = 'This email address is already in use.';
-            break;
-          case 'auth/weak-password':
-            errorMessage = 'Password is too weak. It should be at least 8 characters.';
             break;
           case 'auth/api-key-not-valid':
              errorMessage = 'CRITICAL: Firebase API Key is not valid.';
@@ -121,7 +125,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
       setError(errorMessage);
       if(!['auth/api-key-not-valid', 'auth/unauthorized-domain'].includes(authError.code)){ 
         toast({
-          title: mode === 'signin' ? 'Sign In Failed' : 'Sign Up Failed',
+          title: 'Sign In Failed',
           description: errorMessage,
           variant: 'destructive',
         });
@@ -225,19 +229,36 @@ export default function AuthForm({ mode }: AuthFormProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                className="bg-secondary/30 border-border/70"
-                disabled={isLoading}
-              />
+                <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Password</Label>
+                    <Link href="/forgot-password" passHref>
+                      <Button variant="link" size="sm" className="text-xs text-primary p-0 h-auto">Forgot Password?</Button>
+                    </Link>
+                </div>
+                <div className="relative">
+                    <Input
+                        id="password"
+                        type={showPassword ? 'text' : 'password'}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••"
+                        required
+                        className="bg-secondary/30 border-border/70 pr-10"
+                        disabled={isLoading}
+                    />
+                     <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-foreground"
+                        onClick={() => setShowPassword(!showPassword)}
+                        tabIndex={-1}
+                    >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                </div>
             </div>
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {error && <p className="text-sm text-destructive text-center">{error}</p>}
             <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Icon className="mr-2 h-4 w-4" /> }
               {buttonText}
@@ -263,27 +284,20 @@ export default function AuthForm({ mode }: AuthFormProps) {
             className="w-full hover:bg-secondary/50 border-border/70"
           >
             {isLoading && email === '' && password === '' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon /> }
-            Sign {mode === 'signin' ? 'in' : 'up'} with Google
+            Sign In with Google
           </Button>
-
         </CardContent>
-        <CardFooter className="flex flex-col items-center text-sm pt-6">
-          {mode === 'signin' ? (
+        <CardFooter className="flex flex-col items-center text-sm pt-6 space-y-2">
             <p className="text-muted-foreground">
               Don&apos;t have an account?{' '}
               <Link href="/signup" className="font-medium text-primary hover:underline">
                 Sign Up
               </Link>
             </p>
-          ) : (
-            <p className="text-muted-foreground">
-              Already have an account?{' '}
-              <Link href="/signin" className="font-medium text-primary hover:underline">
-                Sign In
-              </Link>
-            </p>
-          )}
-           <Link href="/" className="mt-4 text-muted-foreground hover:text-primary hover:underline text-xs">
+             <Button variant="link" size="sm" className="text-xs text-muted-foreground p-0 h-auto" onClick={() => toast({title: "Forgot Email?", description:"Please try to remember your email or contact support if you need assistance."})}>
+                Forgot Email?
+             </Button>
+           <Link href="/" className="mt-2 text-muted-foreground hover:text-primary hover:underline text-xs">
               Back to Home
             </Link>
         </CardFooter>
