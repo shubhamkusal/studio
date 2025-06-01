@@ -16,12 +16,26 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// Diagnostic check for the API key
+// Diagnostic checks for essential Firebase config values
 if (!firebaseConfig.apiKey) {
   console.warn(
     `🔴🔴🔴 WARNING: Firebase API Key (NEXT_PUBLIC_FIREBASE_API_KEY) is missing or undefined. 
     Firebase services will not work correctly. 
     Please ensure it is set in your .env file (for local development) or in your hosting provider's environment variable settings (for deployed environments). 🔴🔴🔴`
+  );
+}
+if (!firebaseConfig.authDomain) {
+  console.warn(
+    `🔴🔴🔴 WARNING: Firebase Auth Domain (NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN) is missing or undefined. 
+    Firebase services might not work correctly. 
+    Please ensure it is set in your .env file (e.g., your-project-id.firebaseapp.com) or hosting environment variables. 🔴🔴🔴`
+  );
+}
+if (!firebaseConfig.projectId) {
+  console.warn(
+    `🔴🔴🔴 WARNING: Firebase Project ID (NEXT_PUBLIC_FIREBASE_PROJECT_ID) is missing or undefined. 
+    Firebase services might not work correctly. 
+    Please ensure it is set in your .env file or hosting environment variables. 🔴🔴🔴`
   );
 }
 
@@ -48,3 +62,4 @@ const googleProvider = new GoogleAuthProvider(); // Added GoogleAuthProvider ins
 // }
 
 export { app, auth, firestore, googleProvider /*, storage, analytics */ }; // Exported Firestore and googleProvider
+
