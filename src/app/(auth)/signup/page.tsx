@@ -61,9 +61,17 @@ export default function SignUpPage() {
         errorMessage = 'CRITICAL: Firebase API Key is not valid. Please check your NEXT_PUBLIC_FIREBASE_API_KEY in your .env file (and restart your server if local) or your hosting provider\'s environment variable settings (and redeploy if hosted). Authentication cannot proceed.';
         toast({
           title: 'CRITICAL CONFIGURATION ERROR',
-          description: "Firebase API Key (NEXT_PUBLIC_FIREBASE_API_KEY) is invalid. 1. Verify key in Firebase console. 2. Update .env (local) or hosting vars (deployed). 3. IMPORTANT: Restart local server or REDEPLOY application.",
+          description: errorMessage,
           variant: 'destructive',
-          duration: 15000, // Longer duration for critical errors
+          duration: 15000,
+        });
+      } else if (authError.code === 'auth/operation-not-allowed') {
+        errorMessage = "Email Link sign-in is not enabled for this Firebase project.";
+        toast({
+          title: 'Action Required: Enable Sign-in Method',
+          description: "Please enable 'Email link (passwordless sign-in)' in your Firebase console (Authentication > Sign-in method > Email/Password provider).",
+          variant: 'destructive',
+          duration: 15000,
         });
       } else if (authError.code === 'auth/user-already-exists' || authError.code === 'auth/email-already-in-use') {
         errorMessage = 'This email is already associated with an account. Please sign in instead.';
@@ -113,11 +121,21 @@ export default function SignUpPage() {
                 duration: 15000,
              });
              break;
+          case 'auth/operation-not-allowed':
+            errorMessage = "Google Sign-In is not enabled for this Firebase project.";
+            toast({
+                title: 'Action Required: Enable Sign-in Method',
+                description: "Please enable 'Google' as a sign-in provider in your Firebase console (Authentication > Sign-in method).",
+                variant: 'destructive',
+                duration: 10000,
+            });
+            break;
           default:
             errorMessage = authError.message || errorMessage;
         }
       }
-      if(authError.code !== 'auth/api-key-not-valid') { // Avoid double toast for API key
+      // Avoid double toast for API key or operation-not-allowed as they have specific detailed toasts
+      if(authError.code !== 'auth/api-key-not-valid' && authError.code !== 'auth/operation-not-allowed'){ 
         toast({
           title: 'Google Sign In Failed',
           description: errorMessage,
@@ -169,7 +187,7 @@ export default function SignUpPage() {
                   disabled={isLoading}
                 />
               </div>
-              {error && ( // Display general error message here if set
+              {error && ( 
                 <div className="flex items-start p-3 rounded-md bg-destructive/10 border border-destructive/50 text-destructive text-sm">
                   <AlertTriangle className="h-5 w-5 mr-2 shrink-0 mt-0.5" />
                   <p>{error}</p>
@@ -220,3 +238,5 @@ export default function SignUpPage() {
     </div>
   );
 }
+
+    
