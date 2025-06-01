@@ -45,8 +45,6 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isApiKeyPotentiallyInvalid, setIsApiKeyPotentiallyInvalid] = useState(false);
-  const [apiKeyErrorMessage, setApiKeyErrorMessage] = useState<string | null>(null);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -55,22 +53,9 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const buttonText = mode === 'signin' ? 'Sign In' : 'Sign Up';
   const Icon = mode === 'signin' ? KeyRound : UserPlus;
 
-  useEffect(() => {
-    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-    if (!apiKey || apiKey.includes("YOUR_") || apiKey.includes("PASTE_") || apiKey.includes("XXXXX") || apiKey.length < 20) {
-      setIsApiKeyPotentiallyInvalid(true);
-      setApiKeyErrorMessage("CRITICAL CONFIGURATION ISSUE: Your Firebase API Key (NEXT_PUBLIC_FIREBASE_API_KEY) appears to be missing, a placeholder, or invalid. Please check your application's .env file (and restart your server if developing locally) or your hosting provider's environment variable settings (and redeploy if hosted). Authentication WILL NOT WORK until this is fixed.");
-    }
-  }, []);
-
 
   const handleEmailPasswordSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if (isApiKeyPotentiallyInvalid) {
-        toast({ title: "Configuration Issue", description: apiKeyErrorMessage, variant: "destructive", duration: 10000 });
-        return;
-    }
-
     setIsLoading(true);
     setError(null);
 
@@ -112,7 +97,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             errorMessage = 'Password is too weak. It should be at least 8 characters.';
             break;
           case 'auth/api-key-not-valid':
-             errorMessage = 'Firebase API Key is not valid. CRITICAL: Check NEXT_PUBLIC_FIREBASE_API_KEY in .env file (restart server) or hosting provider config (redeploy).';
+             errorMessage = 'CRITICAL: Firebase API Key is not valid. Please check your NEXT_PUBLIC_FIREBASE_API_KEY in your .env file (and restart your server if local) or your hosting provider\'s environment variable settings (and redeploy if hosted).';
              break;
           default:
             errorMessage = authError.message || errorMessage;
@@ -131,11 +116,6 @@ export default function AuthForm({ mode }: AuthFormProps) {
   };
 
   const handleGoogleSignIn = async () => {
-    if (isApiKeyPotentiallyInvalid) {
-        toast({ title: "Configuration Issue", description: apiKeyErrorMessage, variant: "destructive", duration: 10000 });
-        return;
-    }
-    
     setIsLoading(true);
     setError(null);
     try {
@@ -157,13 +137,13 @@ export default function AuthForm({ mode }: AuthFormProps) {
             errorMessage = 'An account already exists with the same email address but different sign-in credentials.';
             break;
            case 'auth/api-key-not-valid':
-             errorMessage = 'Firebase API Key is not valid for Google Sign-In. CRITICAL: Check NEXT_PUBLIC_FIREBASE_API_KEY in .env file (restart server) or hosting provider config (redeploy).';
+             errorMessage = 'CRITICAL: Firebase API Key is not valid for Google Sign-In. Please check your NEXT_PUBLIC_FIREBASE_API_KEY in your .env file (and restart your server if local) or your hosting provider\'s environment variable settings (and redeploy if hosted).';
              break;
           default:
             errorMessage = authError.message || errorMessage;
         }
       }
-      setError(errorMessage); // Also set general error for UI display if needed
+      setError(errorMessage); 
       toast({
         title: 'Google Sign In Failed',
         description: errorMessage,
@@ -187,14 +167,6 @@ export default function AuthForm({ mode }: AuthFormProps) {
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
-          {isApiKeyPotentiallyInvalid && apiKeyErrorMessage && (
-            <div className="mb-6 p-3 rounded-md bg-destructive/10 border border-destructive/50 text-destructive text-sm">
-              <div className="flex items-start">
-                <AlertTriangle className="h-5 w-5 mr-2 shrink-0 mt-0.5" />
-                <p>{apiKeyErrorMessage}</p>
-              </div>
-            </div>
-          )}
           <form onSubmit={handleEmailPasswordSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email">Email Address</Label>

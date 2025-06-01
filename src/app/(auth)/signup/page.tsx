@@ -30,27 +30,12 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isEmailSent, setIsEmailSent] = useState(false);
-  const [isApiKeyPotentiallyInvalid, setIsApiKeyPotentiallyInvalid] = useState(false);
-  const [apiKeyErrorMessage, setApiKeyErrorMessage] = useState<string | null>(null);
   const router = useRouter();
   const { toast } = useToast();
   const { reloadUserProfile } = useAuth();
 
-  useEffect(() => {
-    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-    if (!apiKey || apiKey.includes("YOUR_") || apiKey.includes("PASTE_") || apiKey.includes("XXXXX") || apiKey.length < 20) {
-      setIsApiKeyPotentiallyInvalid(true);
-      setApiKeyErrorMessage("CRITICAL CONFIGURATION ISSUE: Your Firebase API Key (NEXT_PUBLIC_FIREBASE_API_KEY) appears to be missing, a placeholder, or invalid. Please check your application's .env file (and restart your server if developing locally) or your hosting provider's environment variable settings (and redeploy if hosted). Authentication WILL NOT WORK until this is fixed.");
-    }
-  }, []);
-
   const handleEmailSignUp = async (event: FormEvent) => {
     event.preventDefault();
-    if (isApiKeyPotentiallyInvalid) {
-        toast({ title: "Configuration Issue", description: apiKeyErrorMessage, variant: "destructive", duration: 10000 });
-        setError(apiKeyErrorMessage);
-        return;
-    }
     setIsLoading(true);
     setError(null);
 
@@ -91,11 +76,6 @@ export default function SignUpPage() {
   };
 
   const handleGoogleSignIn = async () => {
-    if (isApiKeyPotentiallyInvalid) {
-        toast({ title: "Configuration Issue", description: apiKeyErrorMessage, variant: "destructive", duration: 10000 });
-        // setError(apiKeyErrorMessage); // Not setting general error here as Google flow is separate
-        return;
-    }
     setIsLoading(true);
     setError(null);
     try {
@@ -146,14 +126,6 @@ export default function SignUpPage() {
           <CardDescription>Join TRACKERLY today. Start by entering your email or using Google.</CardDescription>
         </CardHeader>
         <CardContent>
-          {isApiKeyPotentiallyInvalid && apiKeyErrorMessage && !isEmailSent && (
-            <div className="mb-6 p-3 rounded-md bg-destructive/10 border border-destructive/50 text-destructive text-sm">
-              <div className="flex items-start">
-                <AlertTriangle className="h-5 w-5 mr-2 shrink-0 mt-0.5" />
-                <p>{apiKeyErrorMessage}</p>
-              </div>
-            </div>
-          )}
           {isEmailSent ? (
             <div className="text-center p-4 bg-primary/10 rounded-md">
               <Mail className="h-10 w-10 text-primary mx-auto mb-3" />
