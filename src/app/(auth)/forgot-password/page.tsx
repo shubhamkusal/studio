@@ -92,11 +92,11 @@ export default function ForgotPasswordPage() {
       <Card className="w-full max-w-md shadow-xl border-border/50">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
-            <Mail className="h-12 w-12 text-primary" /> {/* Changed MailLock to Mail */}
+            <Mail className="h-12 w-12 text-primary" /> {/* Ensured Mail icon is used */}
           </div>
           <CardTitle className="font-headline text-3xl">Reset Your Password</CardTitle>
           <CardDescription>
-            {isEmailSent 
+            {isEmailSent
               ? `A password reset link has been sent to ${email} if an account exists. Please check your inbox.`
               : "Enter your email address and we'll send you a link to reset your password."
             }
@@ -105,7 +105,7 @@ export default function ForgotPasswordPage() {
         <CardContent>
           {isEmailSent ? (
              <div className="text-center p-4 bg-primary/10 rounded-md">
-              <Mail className="h-10 w-10 text-primary mx-auto mb-3" /> {/* Changed MailLock to Mail */}
+              <Mail className="h-10 w-10 text-primary mx-auto mb-3" /> {/* Ensured Mail icon is used */}
               <h3 className="text-lg font-semibold text-foreground">Check Your Email</h3>
               <p className="text-muted-foreground text-sm">
                 If an account exists for <strong>{email}</strong>, you will receive a password reset link shortly.
@@ -137,7 +137,7 @@ export default function ForgotPasswordPage() {
                 </div>
               )}
               <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
-                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />} {/* Changed MailLock to Mail */}
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />} {/* Ensured Mail icon is used */}
                 Send Reset Link
               </Button>
             </form>
