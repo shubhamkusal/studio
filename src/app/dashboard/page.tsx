@@ -25,10 +25,15 @@ export default function DashboardPage() {
 
   useEffect(() => {
     // Only proceed if auth and profile are loaded
-    if (!authLoading && user && !profileLoading && userProfile) {
-      if (!userProfile.organizationId || !userProfile.onboardingComplete) {
-        setShowOnboardingModal(true);
+    if (!authLoading && user && !profileLoading) {
+      if (userProfile) { // Profile exists
+        if (!userProfile.organizationId || !userProfile.onboardingComplete) {
+          setShowOnboardingModal(true);
+        } else {
+          setShowOnboardingModal(false); // User is fully onboarded
+        }
       } else {
+        // User exists, profile loading finished, but userProfile is null (error fetching/creating)
         setShowOnboardingModal(false);
       }
     }
@@ -52,8 +57,7 @@ export default function DashboardPage() {
     );
   }
 
-  // If no user after loading, AuthProvider will redirect or this effect will catch it.
-  // This state means we have a user, but their profile indicates onboarding is needed.
+  // If user exists and onboarding modal should be shown
   if (user && showOnboardingModal) {
     return (
       <OnboardingModal 
@@ -61,8 +65,6 @@ export default function DashboardPage() {
         isOpen={showOnboardingModal} 
         setIsOpen={(isOpen) => {
           setShowOnboardingModal(isOpen);
-          // If modal is closed without completing, we might want to reload profile
-          // or assume they will complete it. For now, just closes.
           if (!isOpen) reloadUserProfile(); 
         }} 
       />
@@ -93,6 +95,9 @@ export default function DashboardPage() {
             </p>
             <div className="p-6 bg-secondary/30 rounded-lg my-6">
               <p className="text-lg font-medium text-card-foreground">Your tracked time and tasks will appear here.</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                (Dashboard content is currently a placeholder.)
+              </p>
             </div>
           </CardContent>
           <CardFooter className="flex justify-center">
@@ -105,13 +110,25 @@ export default function DashboardPage() {
     );
   }
 
-  // Fallback, e.g. if user is present but profile is somehow null after loading
-  // or if logic for modal/dashboard doesn't cover a case.
-  // This usually indicates an issue in state management or data fetching logic.
+  // Fallback: User is logged in, auth & profile loading are done, but profile might be null or onboarding incomplete
+  // and modal isn't triggered. This usually indicates an issue fetching/creating userProfile.
   return (
-     <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground">
-        <p>Loading dashboard or an unexpected state occurred...</p>
-        <Button onClick={() => router.push('/')} className="mt-4">Go Home</Button>
+     <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground p-4 text-center">
+        <h2 className="text-2xl font-semibold mb-3">Oops! Something went wrong.</h2>
+        <p className="text-muted-foreground mb-6 max-w-md">
+          We couldn't load your dashboard details. This might be due to a temporary connectivity issue or a problem fetching your profile.
+          Please ensure your internet connection is stable and try again.
+        </p>
+        <p className="text-xs text-muted-foreground mb-6">
+          If you continue to see this message, please check for console errors or contact support.
+          (This typically means Firestore is not accessible or user profile data is missing.)
+        </p>
+        <div className="space-x-4">
+          <Button onClick={() => reloadUserProfile().catch(err => console.error("Failed to reload profile:", err))} variant="outline">
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Try Reloading Profile
+          </Button>
+          <Button onClick={() => router.push('/')}>Go Home</Button>
+        </div>
      </div>
   );
 }
