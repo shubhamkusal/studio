@@ -102,15 +102,24 @@ export default function AuthForm({ mode }: AuthFormProps) {
                 title: 'CRITICAL CONFIGURATION ERROR',
                 description: "Firebase API Key (NEXT_PUBLIC_FIREBASE_API_KEY) is invalid. 1. Verify key in Firebase console. 2. Update .env (local) or hosting vars (deployed). 3. IMPORTANT: Restart local server or REDEPLOY application.",
                 variant: 'destructive',
-                duration: 15000, // Longer duration for critical errors
+                duration: 15000, 
              });
              break;
+          case 'auth/unauthorized-domain':
+            errorMessage = "This domain is not authorized for Firebase operations.";
+            toast({
+              title: 'Action Required: Authorize Domain',
+              description: "Please add your app's domain (e.g., localhost, your-app.com) to the 'Authorized domains' list in your Firebase console (Authentication > Settings).",
+              variant: 'destructive',
+              duration: 15000,
+            });
+            break;
           default:
             errorMessage = authError.message || errorMessage;
         }
       }
       setError(errorMessage);
-      if(authError.code !== 'auth/api-key-not-valid'){ // Avoid double toast for API key
+      if(!['auth/api-key-not-valid', 'auth/unauthorized-domain'].includes(authError.code)){ 
         toast({
           title: mode === 'signin' ? 'Sign In Failed' : 'Sign Up Failed',
           description: errorMessage,
@@ -153,12 +162,30 @@ export default function AuthForm({ mode }: AuthFormProps) {
                 duration: 15000,
              });
              break;
+          case 'auth/operation-not-allowed':
+            errorMessage = "Google Sign-In is not enabled for this Firebase project.";
+            toast({
+                title: 'Action Required: Enable Sign-in Method',
+                description: "Please enable 'Google' as a sign-in provider in your Firebase console (Authentication > Sign-in method).",
+                variant: 'destructive',
+                duration: 10000,
+            });
+            break;
+          case 'auth/unauthorized-domain':
+            errorMessage = "This domain is not authorized for Firebase operations.";
+            toast({
+              title: 'Action Required: Authorize Domain',
+              description: "Please add your app's domain (e.g., localhost, your-app.com) to the 'Authorized domains' list in your Firebase console (Authentication > Settings).",
+              variant: 'destructive',
+              duration: 15000,
+            });
+            break;
           default:
             errorMessage = authError.message || errorMessage;
         }
       }
       setError(errorMessage); 
-      if(authError.code !== 'auth/api-key-not-valid'){ // Avoid double toast for API key
+      if(!['auth/api-key-not-valid', 'auth/operation-not-allowed', 'auth/unauthorized-domain'].includes(authError.code)){ 
         toast({
           title: 'Google Sign In Failed',
           description: errorMessage,

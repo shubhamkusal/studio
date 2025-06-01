@@ -73,6 +73,14 @@ export default function SignUpPage() {
           variant: 'destructive',
           duration: 15000,
         });
+      } else if (authError.code === 'auth/unauthorized-domain') {
+        errorMessage = "This domain is not authorized for Firebase operations.";
+        toast({
+          title: 'Action Required: Authorize Domain',
+          description: "Please add your app's domain (e.g., localhost, your-app.com) to the 'Authorized domains' list in your Firebase console (Authentication > Settings).",
+          variant: 'destructive',
+          duration: 15000,
+        });
       } else if (authError.code === 'auth/user-already-exists' || authError.code === 'auth/email-already-in-use') {
         errorMessage = 'This email is already associated with an account. Please sign in instead.';
         setTimeout(() => router.push('/signin'), 3000);
@@ -130,12 +138,21 @@ export default function SignUpPage() {
                 duration: 10000,
             });
             break;
+          case 'auth/unauthorized-domain':
+            errorMessage = "This domain is not authorized for Firebase operations.";
+            toast({
+              title: 'Action Required: Authorize Domain',
+              description: "Please add your app's domain (e.g., localhost, your-app.com) to the 'Authorized domains' list in your Firebase console (Authentication > Settings).",
+              variant: 'destructive',
+              duration: 15000,
+            });
+            break;
           default:
             errorMessage = authError.message || errorMessage;
         }
       }
-      // Avoid double toast for API key or operation-not-allowed as they have specific detailed toasts
-      if(authError.code !== 'auth/api-key-not-valid' && authError.code !== 'auth/operation-not-allowed'){ 
+      // Avoid double toast for certain errors as they have specific detailed toasts
+      if(!['auth/api-key-not-valid', 'auth/operation-not-allowed', 'auth/unauthorized-domain'].includes(authError.code)){ 
         toast({
           title: 'Google Sign In Failed',
           description: errorMessage,
@@ -238,5 +255,4 @@ export default function SignUpPage() {
     </div>
   );
 }
-
     
