@@ -7,7 +7,7 @@ export interface UserProfile {
   email: string | null;
   displayName?: string | null;
   organizationId?: string | null;
-  role?: 'owner' | 'admin' | 'member';
+  role?: 'owner' | 'admin' | 'member' | null; // Role can be null initially
   onboardingComplete?: boolean;
   createdAt: Timestamp;
   updatedAt: Timestamp;
@@ -22,9 +22,9 @@ export interface Organization {
   id?: string; // Document ID, set by Firestore
   name: string;
   description?: string;
-  industry?: string;
-  owner: OrganizationOwner; // Updated from ownerUid
-  orgCode: string;
+  industry: Industry; // Made industry mandatory as per PRD form
+  owner: OrganizationOwner; 
+  orgCode: string; // Unique invite code e.g., TRK-XXXXXX
   members: string[]; // Array of user UIDs
   createdAt: Timestamp;
   updatedAt: Timestamp;
