@@ -20,32 +20,37 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-async function fetchOrCreateUserProfile(fbUser: FirebaseUser): Promise<UserProfile> {
+async function fetchOrCreateUserProfile(fbUser: FirebaseUser): Promise<UserProfile | null> {
   const userDocRef = doc(firestore, 'users', fbUser.uid);
-  const userSnap = await getDoc(userDocRef);
+  try {
+    const userSnap = await getDoc(userDocRef);
 
-  if (userSnap.exists()) {
-    return userSnap.data() as UserProfile;
-  } else {
-    const newUserProfileData = {
-      uid: fbUser.uid,
-      email: fbUser.email,
-      displayName: fbUser.displayName || fbUser.email?.split('@')[0] || 'User',
-      onboardingComplete: false,
-      organizationId: null,
-      role: null,
-      // Firestore will convert serverTimestamp to actual Timestamp
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    };
-    await setDoc(userDocRef, newUserProfileData);
-    // For immediate client-side use, simulate the timestamp
-    const now = Timestamp.now();
-    return {
-      ...newUserProfileData,
-      createdAt: now,
-      updatedAt: now,
-    } as UserProfile;
+    if (userSnap.exists()) {
+      return userSnap.data() as UserProfile;
+    } else {
+      const newUserProfileData = {
+        uid: fbUser.uid,
+        email: fbUser.email,
+        displayName: fbUser.displayName || fbUser.email?.split('@')[0] || 'User',
+        onboardingComplete: false,
+        organizationId: null,
+        role: null,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      };
+      await setDoc(userDocRef, newUserProfileData);
+      const now = Timestamp.now();
+      return {
+        ...newUserProfileData,
+        createdAt: now,
+        updatedAt: now,
+      } as UserProfile;
+    }
+  } catch (error) {
+    console.error("Error in fetchOrCreateUserProfile:", error);
+    // Propagate the error or return null to indicate failure
+    // Depending on how you want to handle it upstream
+    return null; 
   }
 }
 
@@ -53,42 +58,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
-  const [profileLoading, setProfileLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(true); // Initialize as true
 
   const loadUserProfile = async (fbUser: FirebaseUser | null) => {
     if (fbUser) {
-      setProfileLoading(true);
+      setProfileLoading(true); // Set loading true before fetching
       try {
         const profile = await fetchOrCreateUserProfile(fbUser);
-        setUserProfile(profile);
+        setUserProfile(profile); // Profile can be UserProfile or null
       } catch (error) {
-        console.error("Error fetching user profile:", error);
-        setUserProfile(null); // Handle error case
+        console.error("Error loading user profile in AuthProvider:", error);
+        setUserProfile(null); // Ensure profile is null on error
       } finally {
-        setProfileLoading(false);
+        setProfileLoading(false); // Always set loading false after attempt
       }
     } else {
       setUserProfile(null);
-      setProfileLoading(false);
+      setProfileLoading(false); // No user, so profile loading is done (false)
     }
   };
   
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
-      setAuthLoading(false);
-      await loadUserProfile(currentUser);
+      setAuthLoading(false); // Auth state determined
+      await loadUserProfile(currentUser); // Now load profile
     });
     return () => unsubscribe();
   }, []);
 
   const reloadUserProfile = async () => {
     if (user) {
+      // No need to set authLoading here as auth state hasn't changed
       await loadUserProfile(user);
     }
   };
 
-  // Combined loading state
+  // isLoading should reflect the combined loading states accurately.
+  // If auth is loading, we are loading.
+  // If auth is done, but we have a user, then profileLoading determines overall loading.
+  // If auth is done and no user, we are not loading profile data.
   const isLoading = authLoading || (user != null && profileLoading);
 
   if (isLoading) {
@@ -100,7 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, userProfile, authLoading, profileLoading: user != null && profileLoading, reloadUserProfile }}>
+    <AuthContext.Provider value={{ user, userProfile, authLoading, profileLoading, reloadUserProfile }}>
       {children}
     </AuthContext.Provider>
   );
