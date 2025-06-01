@@ -59,16 +59,23 @@ export default function SignUpPage() {
         errorMessage = 'Invalid email address format.';
       } else if (authError.code === 'auth/api-key-not-valid') {
         errorMessage = 'CRITICAL: Firebase API Key is not valid. Please check your NEXT_PUBLIC_FIREBASE_API_KEY in your .env file (and restart your server if local) or your hosting provider\'s environment variable settings (and redeploy if hosted). Authentication cannot proceed.';
+        toast({
+          title: 'CRITICAL CONFIGURATION ERROR',
+          description: "Firebase API Key (NEXT_PUBLIC_FIREBASE_API_KEY) is invalid. 1. Verify key in Firebase console. 2. Update .env (local) or hosting vars (deployed). 3. IMPORTANT: Restart local server or REDEPLOY application.",
+          variant: 'destructive',
+          duration: 15000, // Longer duration for critical errors
+        });
       } else if (authError.code === 'auth/user-already-exists' || authError.code === 'auth/email-already-in-use') {
         errorMessage = 'This email is already associated with an account. Please sign in instead.';
         setTimeout(() => router.push('/signin'), 3000);
+      } else {
+         toast({
+            title: 'Sign Up Failed',
+            description: errorMessage,
+            variant: 'destructive',
+         });
       }
       setError(errorMessage);
-      toast({
-        title: 'Sign Up Failed',
-        description: errorMessage,
-        variant: 'destructive',
-      });
       console.error('Email Sign Up Error:', authError);
     } finally {
       setIsLoading(false);
@@ -98,17 +105,26 @@ export default function SignUpPage() {
             errorMessage = 'An account already exists with this email using a different sign-in method. Please sign in using that method.';
             break;
           case 'auth/api-key-not-valid':
-             errorMessage = 'CRITICAL: Firebase API Key is not valid for Google Sign-In. Please check your NEXT_PUBLIC_FIREBASE_API_KEY in your .env file (and restart your server if local) or your hosting provider\'s environment variable settings (and redeploy if hosted).';
+             errorMessage = 'CRITICAL: Firebase API Key is not valid for Google Sign-In.';
+             toast({
+                title: 'CRITICAL CONFIGURATION ERROR',
+                description: "Firebase API Key (NEXT_PUBLIC_FIREBASE_API_KEY) is invalid for Google Sign-In. 1. Verify key in Firebase console. 2. Update .env (local) or hosting vars (deployed). 3. IMPORTANT: Restart local server or REDEPLOY application.",
+                variant: 'destructive',
+                duration: 15000,
+             });
              break;
           default:
             errorMessage = authError.message || errorMessage;
         }
       }
-      toast({
-        title: 'Google Sign In Failed',
-        description: errorMessage,
-        variant: 'destructive',
-      });
+      if(authError.code !== 'auth/api-key-not-valid') { // Avoid double toast for API key
+        toast({
+          title: 'Google Sign In Failed',
+          description: errorMessage,
+          variant: 'destructive',
+        });
+      }
+      setError(errorMessage);
       console.error('Google Sign In Error:', authError);
     } finally {
       setIsLoading(false);
@@ -153,7 +169,7 @@ export default function SignUpPage() {
                   disabled={isLoading}
                 />
               </div>
-              {error && (
+              {error && ( // Display general error message here if set
                 <div className="flex items-start p-3 rounded-md bg-destructive/10 border border-destructive/50 text-destructive text-sm">
                   <AlertTriangle className="h-5 w-5 mr-2 shrink-0 mt-0.5" />
                   <p>{error}</p>

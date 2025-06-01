@@ -62,10 +62,17 @@ export default function FinishSignUpPage() {
           } else if (authError.code === 'auth/user-disabled') {
             errorMessage = 'This account has been disabled.';
           } else if (authError.code === 'auth/api-key-not-valid'){
-            errorMessage = 'Firebase API Key is not valid. CRITICAL: Check NEXT_PUBLIC_FIREBASE_API_KEY in .env file (restart server) or hosting provider config (redeploy).';
+            errorMessage = 'CRITICAL: Firebase API Key is not valid.';
+             toast({
+                title: 'CRITICAL CONFIGURATION ERROR',
+                description: "Firebase API Key (NEXT_PUBLIC_FIREBASE_API_KEY) is invalid for this operation. 1. Verify key in Firebase console. 2. Update .env (local) or hosting vars (deployed). 3. IMPORTANT: Restart local server or REDEPLOY application.",
+                variant: 'destructive',
+                duration: 15000,
+             });
+          } else {
+            toast({ title: 'Sign Up Link Error', description: errorMessage, variant: 'destructive' });
           }
           setError(errorMessage);
-          toast({ title: 'Sign Up Link Error', description: errorMessage, variant: 'destructive' });
           console.error('Email Link Sign In Error:', authError);
         } finally {
           setIsLoading(false);
@@ -76,7 +83,8 @@ export default function FinishSignUpPage() {
     };
 
     processEmailLink();
-  }, [toast]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Removed toast from dependencies to prevent re-triggering
 
   const handleSetPassword = async (event: FormEvent) => {
     event.preventDefault();
@@ -112,10 +120,17 @@ export default function FinishSignUpPage() {
       if (authError.code === 'auth/weak-password') {
         errorMessage = 'Password is too weak. Please choose a stronger password (at least 8 characters).';
       } else if (authError.code === 'auth/api-key-not-valid') {
-        errorMessage = 'Firebase API Key is not valid for this operation. CRITICAL: Check NEXT_PUBLIC_FIREBASE_API_KEY in .env file (restart server) or hosting provider config (redeploy).';
+        errorMessage = 'CRITICAL: Firebase API Key is not valid for this operation.';
+        toast({
+            title: 'CRITICAL CONFIGURATION ERROR',
+            description: "Firebase API Key (NEXT_PUBLIC_FIREBASE_API_KEY) is invalid for setting password. 1. Verify key in Firebase console. 2. Update .env (local) or hosting vars (deployed). 3. IMPORTANT: Restart local server or REDEPLOY application.",
+            variant: 'destructive',
+            duration: 15000,
+        });
+      } else {
+        toast({ title: 'Password Error', description: errorMessage, variant: 'destructive' });
       }
       setError(errorMessage);
-      toast({ title: 'Password Error', description: errorMessage, variant: 'destructive' });
       console.error('Set Password Error:', authError);
     } finally {
       setIsLoading(false);
