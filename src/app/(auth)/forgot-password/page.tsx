@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, MailLock, AlertTriangle, ArrowLeft } from 'lucide-react';
+import { Loader2, Mail, AlertTriangle, ArrowLeft } from 'lucide-react'; // Changed MailLock to Mail
 import Link from 'next/link';
 
 export default function ForgotPasswordPage() {
@@ -92,7 +92,7 @@ export default function ForgotPasswordPage() {
       <Card className="w-full max-w-md shadow-xl border-border/50">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
-            <MailLock className="h-12 w-12 text-primary" />
+            <Mail className="h-12 w-12 text-primary" /> {/* Changed MailLock to Mail */}
           </div>
           <CardTitle className="font-headline text-3xl">Reset Your Password</CardTitle>
           <CardDescription>
@@ -105,7 +105,7 @@ export default function ForgotPasswordPage() {
         <CardContent>
           {isEmailSent ? (
              <div className="text-center p-4 bg-primary/10 rounded-md">
-              <MailLock className="h-10 w-10 text-primary mx-auto mb-3" />
+              <Mail className="h-10 w-10 text-primary mx-auto mb-3" /> {/* Changed MailLock to Mail */}
               <h3 className="text-lg font-semibold text-foreground">Check Your Email</h3>
               <p className="text-muted-foreground text-sm">
                 If an account exists for <strong>{email}</strong>, you will receive a password reset link shortly.
@@ -137,7 +137,7 @@ export default function ForgotPasswordPage() {
                 </div>
               )}
               <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
-                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MailLock className="mr-2 h-4 w-4" />}
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />} {/* Changed MailLock to Mail */}
                 Send Reset Link
               </Button>
             </form>
