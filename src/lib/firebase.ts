@@ -16,6 +16,11 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
+// SERVER-SIDE DIAGNOSTIC LOG:
+// This log will appear in the terminal where you run `npm run dev`.
+// It helps verify if the .env file changes are being loaded correctly.
+console.log("Attempting to initialize Firebase with API Key:", process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
+
 // Diagnostic checks for essential Firebase config values
 if (!firebaseConfig.apiKey) {
   console.warn(

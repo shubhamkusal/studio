@@ -14,16 +14,16 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Building, Users, BadgeHelp, ArrowLeft } from 'lucide-react';
+import { Loader2, Building, Users, BadgeHelp, ArrowLeft, CheckCircle, Copy as CopyIcon } from 'lucide-react';
 import { firestore } from '@/lib/firebase';
 import { doc, collection, writeBatch, query, where, getDocs, arrayUnion, serverTimestamp, type Timestamp } from 'firebase/firestore';
 import type { User as FirebaseUser } from 'firebase/auth';
-import { industries, type Industry, type Organization, type OrganizationOwner, type UserProfile } from '@/types/firestore';
+import { industries, type Industry, type Organization, type UserProfile } from '@/types/firestore';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-provider';
 
 interface OnboardingModalProps {
-  user: FirebaseUser; 
+  user: FirebaseUser;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }
@@ -51,8 +51,9 @@ function generateOrgCode(): string {
 }
 
 export default function OnboardingModal({ user, isOpen, setIsOpen }: OnboardingModalProps) {
-  const [step, setStep] = useState<'welcome' | 'createOrg' | 'joinOrg'>('welcome');
+  const [step, setStep] = useState<'welcome' | 'createOrg' | 'joinOrg' | 'creationSuccess'>('welcome');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [createdOrgDetails, setCreatedOrgDetails] = useState<{ name: string; code: string } | null>(null);
   const { toast } = useToast();
   const router = useRouter();
   const { reloadUserProfile } = useAuth();
@@ -69,10 +70,10 @@ export default function OnboardingModal({ user, isOpen, setIsOpen }: OnboardingM
   const handleCreateOrganization: SubmitHandler<CreateOrgInputs> = async (data) => {
     setIsSubmitting(true);
     const newOrgCode = generateOrgCode();
-    
+
     const ownerInfo: OrganizationOwner = {
         uid: user.uid,
-        email: user.email || null, // Ensure email can be null
+        email: user.email || null,
     };
 
     const newOrganizationData: Omit<Organization, 'id'> = {
@@ -88,23 +89,22 @@ export default function OnboardingModal({ user, isOpen, setIsOpen }: OnboardingM
 
     try {
       const batch = writeBatch(firestore);
-      const orgRef = doc(collection(firestore, 'organizations')); // Auto-generate ID
+      const orgRef = doc(collection(firestore, 'organizations'));
       batch.set(orgRef, newOrganizationData);
 
       const userProfileRef = doc(firestore, 'users', user.uid);
       batch.update(userProfileRef, {
         organizationId: orgRef.id,
-        role: 'owner',
+        role: 'owner', // Assigns user as 'owner' (admin with full permissions)
         onboardingComplete: true,
         updatedAt: serverTimestamp(),
       } as Partial<UserProfile>);
 
       await batch.commit();
 
-      toast({ title: "Organization Created!", description: `${data.orgName} has been successfully created. Your org code: ${newOrgCode}` });
-      await reloadUserProfile(); // Reload profile to get new org details
-      setIsOpen(false); // Close modal
-      router.push('/dashboard'); // Navigate to dashboard
+      setCreatedOrgDetails({ name: data.orgName, code: newOrgCode });
+      setStep('creationSuccess');
+      toast({ title: "Organization Created!", description: `${data.orgName} has been successfully created.` });
     } catch (error) {
       console.error("Error creating organization:", error);
       toast({ title: "Error", description: "Failed to create organization. Please try again.", variant: "destructive" });
@@ -141,18 +141,18 @@ export default function OnboardingModal({ user, isOpen, setIsOpen }: OnboardingM
         const userProfileRef = doc(firestore, 'users', user.uid);
         batch.update(userProfileRef, {
           organizationId: orgDoc.id,
-          role: 'member',
+          role: 'member', // Default role for joining members
           onboardingComplete: true,
           updatedAt: serverTimestamp(),
         } as Partial<UserProfile>);
-        
+
         await batch.commit();
         toast({ title: "Joined Organization!", description: `Successfully joined ${orgData.name}.` });
       }
-      
-      await reloadUserProfile(); // Reload profile
-      setIsOpen(false); // Close modal
-      router.push('/dashboard'); // Navigate
+
+      await reloadUserProfile();
+      setIsOpen(false);
+      router.push('/dashboard');
     } catch (error) {
       console.error("Error joining organization:", error);
       toast({ title: "Error", description: "Failed to join organization. Please ensure the code is correct and try again.", variant: "destructive" });
@@ -160,26 +160,46 @@ export default function OnboardingModal({ user, isOpen, setIsOpen }: OnboardingM
       setIsSubmitting(false);
     }
   };
-  
+
   const resetToWelcome = () => {
     setStep('welcome');
     createOrgForm.reset();
     joinOrgForm.reset();
+    setCreatedOrgDetails(null);
   }
 
+  const handleCopyToClipboard = async () => {
+    if (createdOrgDetails?.code) {
+      try {
+        await navigator.clipboard.writeText(createdOrgDetails.code);
+        toast({ title: "Copied!", description: "Invite code copied to clipboard." });
+      } catch (err) {
+        toast({ title: "Error", description: "Failed to copy code.", variant: "destructive" });
+      }
+    }
+  };
+
+  const proceedToDashboard = async () => {
+    await reloadUserProfile();
+    setIsOpen(false);
+    router.push('/dashboard');
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) setIsOpen(false); }}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open && step !== 'creationSuccess') setIsOpen(false); /* Don't close on overlay click for success step */ }}>
       <DialogContent className="sm:max-w-md md:max-w-lg bg-card border-border/50">
         <DialogHeader>
           <DialogTitle className="font-headline text-2xl text-center text-card-foreground">
             {step === 'welcome' && <>Welcome to Trackerly <span role="img" aria-label="wave">👋</span></>}
             {step === 'createOrg' && "Create Your Organization"}
             {step === 'joinOrg' && "Join an Existing Organization"}
+            {step === 'creationSuccess' && "Organization Created Successfully!"}
           </DialogTitle>
           <DialogDescription className="text-center text-muted-foreground">
             {step === 'welcome' && "Let’s get you set up with an organization."}
             {step === 'createOrg' && "Fill in the details to create your new workspace."}
             {step === 'joinOrg' && "Enter the organization code given to you by an admin."}
+            {step === 'creationSuccess' && `Your organization "${createdOrgDetails?.name}" is ready.`}
           </DialogDescription>
         </DialogHeader>
 
@@ -256,6 +276,29 @@ export default function OnboardingModal({ user, isOpen, setIsOpen }: OnboardingM
               </Button>
             </DialogFooter>
           </form>
+        )}
+
+        {step === 'creationSuccess' && createdOrgDetails && (
+          <div className="py-6 space-y-6 text-center">
+            <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
+            <div>
+              <p className="text-muted-foreground">Your organization <strong className="text-primary">{createdOrgDetails.name}</strong> has been created.</p>
+              <p className="text-muted-foreground mt-2">Share this invite code with your team members:</p>
+              <div className="mt-2 flex items-center justify-center space-x-2">
+                <Input
+                  readOnly
+                  value={createdOrgDetails.code}
+                  className="text-lg font-mono tracking-widest text-center bg-secondary/30 border-primary/30 w-auto text-primary"
+                />
+                <Button variant="outline" size="icon" onClick={handleCopyToClipboard}>
+                  <CopyIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+             <Button onClick={proceedToDashboard} className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90">
+              Go to Dashboard
+            </Button>
+          </div>
         )}
       </DialogContent>
     </Dialog>
