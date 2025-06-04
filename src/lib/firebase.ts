@@ -1,7 +1,7 @@
 
 // src/lib/firebase.ts
 import { initializeApp, getApps, type FirebaseApp } from 'firebase/app';
-import { getAuth, type Auth, GoogleAuthProvider } from 'firebase/auth'; // Added GoogleAuthProvider
+import { getAuth, type Auth, GoogleAuthProvider, setPersistence, browserLocalPersistence } from 'firebase/auth'; // Added GoogleAuthProvider and setPersistence, browserLocalPersistence
 import { getFirestore, type Firestore } from 'firebase/firestore'; // Enabled Firestore
 // import { getStorage, type FirebaseStorage } from 'firebase/storage';
 // import { getAnalytics, type Analytics } from "firebase/analytics";
@@ -57,7 +57,7 @@ if (getApps().length === 0) {
   app = getApps()[0];
 }
 
-auth = getAuth(app);
+auth = getAuth(app); // Initialized auth
 firestore = getFirestore(app); // Initialized Firestore
 const googleProvider = new GoogleAuthProvider(); // Added GoogleAuthProvider instance
 

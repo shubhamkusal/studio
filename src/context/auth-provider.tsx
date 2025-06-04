@@ -78,13 +78,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
   
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+ useEffect(() => {
+ const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       setAuthLoading(false); // Auth state determined
-      await loadUserProfile(currentUser); // Now load profile
+ await loadUserProfile(currentUser); // Now load profile
     });
-    return () => unsubscribe();
+ return () => unsubscribe();
   }, []);
 
   const reloadUserProfile = async () => {
